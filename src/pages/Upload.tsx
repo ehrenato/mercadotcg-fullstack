@@ -72,6 +72,11 @@ export default function Upload() {
           </label>
 
           <label>
+            Número da carta
+            <input></input>
+          </label>
+
+          <label>
             Preço
             <input
               type="number"

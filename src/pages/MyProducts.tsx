@@ -249,6 +249,8 @@ export default function MyProducts() {
                 />
               </div>
 
+              
+
               <div className="my-products-form__field">
                 <label htmlFor="price">Preço</label>
                 <input
