@@ -10,6 +10,7 @@ export default function AuthPage() {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,87 +38,101 @@ export default function AuthPage() {
   function toggleMode() {
     setIsLoginMode((prev) => !prev);
     setError("");
+    setName("");
+    setEmail("");
+    setPassword("");
   }
 
   return (
     <section className="auth-page">
-      <div className="auth-hero">
-        <span className="auth-brand">MercadoTCG</span>
+      <div className="auth-page__hero">
+        <span className="auth-page__badge">MercadoTCG</span>
         <h1>Compre, venda e gerencie suas cartas com uma experiência moderna.</h1>
         <p>
           Entre na sua conta para anunciar produtos, acompanhar pedidos e
           administrar seus anúncios em um só lugar.
         </p>
 
-        <ul>
-          <li>✔ Cadastro e login com autenticação real</li>
-          <li>✔ Área para gerenciar seus anúncios</li>
-          <li>✔ Upload de produtos com imagem</li>
-          <li>✔ Fluxo preparado para pedidos e carrinho</li>
+        <ul className="auth-page__features">
+          <li>Cadastro e login com autenticação real</li>
+          <li>Área para gerenciar seus anúncios</li>
+          <li>Upload de produtos com imagem</li>
+          <li>Fluxo preparado para pedidos e carrinho</li>
         </ul>
       </div>
 
-      <div className="auth-card">
-        <h2>{isLoginMode ? "Entrar" : "Criar conta"}</h2>
-        <p>
-          {isLoginMode
-            ? "Acesse sua conta para continuar."
-            : "Cadastre-se para começar a anunciar."}
-        </p>
+      <div className="auth-card-modern">
+        <div className="auth-card-modern__header">
+          <h2>{isLoginMode ? "Entrar" : "Criar conta"}</h2>
+          <p>
+            {isLoginMode
+              ? "Acesse sua conta para continuar."
+              : "Cadastre-se para começar a anunciar."}
+          </p>
+        </div>
 
-        {error && <div className="auth-error">{error}</div>}
+        {error && <div className="auth-card-modern__error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form className="auth-card-modern__form" onSubmit={handleSubmit}>
           {!isLoginMode && (
-            <label>
-              Nome
+            <div className="auth-field">
+              <label htmlFor="name">Nome</label>
               <input
+                id="name"
+                type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
                 required={!isLoginMode}
               />
-            </label>
+            </div>
           )}
 
-          <label>
-            Email
+          <div className="auth-field">
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seuemail@exemplo.com"
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Senha
+          <div className="auth-field">
+            <label htmlFor="password">Senha</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Digite sua senha"
               required
             />
-          </label>
+          </div>
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" className="auth-submit-button" disabled={loading}>
             {loading
               ? isLoginMode
                 ? "Entrando..."
                 : "Criando conta..."
               : isLoginMode
-              ? "Entrar"
-              : "Criar conta"}
+                ? "Entrar"
+                : "Criar conta"}
           </button>
         </form>
 
-        <div className="auth-switch">
+        <div className="auth-card-modern__footer">
           <span>
             {isLoginMode ? "Ainda não tem conta?" : "Já possui conta?"}
           </span>
-          <button type="button" onClick={toggleMode}>
+
+          <button
+            type="button"
+            className="auth-toggle-button"
+            onClick={toggleMode}
+          >
             {isLoginMode ? "Criar conta" : "Entrar"}
           </button>
         </div>

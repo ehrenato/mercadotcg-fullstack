@@ -63,13 +63,16 @@ export default function Navbar() {
         <div className="navbar-user">
           {isAuthenticated ? (
             <>
-              <span>Olá, {user?.name}</span>
-              <button type="button" onClick={logout}>
+              <span className="navbar-user-name">Olá, {user?.name}</span>
+
+              <button type="button" className="navbar-button" onClick={logout}>
                 Sair
               </button>
             </>
           ) : (
-            <Link to="/auth">Entrar</Link>
+            <Link to="/auth" className="navbar-button">
+              Entrar
+            </Link>
           )}
         </div>
       </div>

@@ -37,6 +37,7 @@ export default function MyProducts() {
   const [success, setSuccess] = useState("");
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+
   const [form, setForm] = useState<EditFormState>({
     title: "",
     description: "",
@@ -94,12 +95,16 @@ export default function MyProducts() {
   }
 
   async function handleDelete(id: number) {
-    const confirmed = window.confirm("Tem certeza que deseja excluir este anúncio?");
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir este anúncio?"
+    );
+
     if (!confirmed) return;
 
     try {
       setError("");
       setSuccess("");
+
       await deleteProduct(id);
       setProducts((prev) => prev.filter((product) => product.id !== id));
 
@@ -144,51 +149,62 @@ export default function MyProducts() {
       setSuccess("Anúncio atualizado com sucesso.");
       cancelEdit();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao atualizar anúncio.");
+      setError(
+        err instanceof Error ? err.message : "Erro ao atualizar anúncio."
+      );
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <section>
-      <h1>Meus anúncios</h1>
-      <p>
-        Gerencie seus produtos anunciados, atualize informações e exclua quando
-        quiser.
-      </p>
+    <section className="my-products-page">
+      <div className="my-products-page__header">
+        <h1>Meus anúncios</h1>
+        <p>
+          Gerencie seus produtos anunciados, atualize informações e exclua quando
+          quiser.
+        </p>
+      </div>
 
-      {error && <div>{error}</div>}
-      {success && <div>{success}</div>}
+      {error && <div className="my-products-alert my-products-alert--error">{error}</div>}
+      {success && (
+        <div className="my-products-alert my-products-alert--success">{success}</div>
+      )}
 
       {loading ? (
-        <div>Carregando seus anúncios...</div>
+        <div className="my-products-empty">Carregando seus anúncios...</div>
       ) : products.length === 0 ? (
-        <div>Você ainda não possui anúncios cadastrados.</div>
+        <div className="my-products-empty">
+          Você ainda não possui anúncios cadastrados.
+        </div>
       ) : (
-        <div className="home-grid">
+        <div className="my-products-grid">
           {products.map((product) => (
-            <article key={product.id} className="product-card">
+            <article key={product.id} className="my-product-card">
               <img
+                className="my-product-card__image"
                 src={getImageSrc(product.image_url)}
                 alt={product.title}
-                className="product-card-image"
               />
 
-              <div className="product-card-body">
-                <span className="product-category">{product.category}</span>
+              <div className="my-product-card__body">
+                <span className="my-product-card__badge">{product.category}</span>
                 <h3>{product.title}</h3>
                 <p>{product.description}</p>
                 <strong>R$ {Number(product.price).toFixed(2)}</strong>
+              </div>
 
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button type="button" onClick={() => startEdit(product)}>
-                    Editar
-                  </button>
-                  <button type="button" onClick={() => handleDelete(product.id)}>
-                    Excluir
-                  </button>
-                </div>
+              <div className="my-product-card__actions">
+                <button className="primary-button" onClick={() => startEdit(product)}>
+                  Editar
+                </button>
+                <button
+                  className="ghost-button"
+                  onClick={() => handleDelete(product.id)}
+                >
+                  Excluir
+                </button>
               </div>
             </article>
           ))}
@@ -196,41 +212,47 @@ export default function MyProducts() {
       )}
 
       {editingProduct && (
-        <div className="edit-modal-overlay" onClick={cancelEdit}>
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-modal-header">
+        <div className="my-products-modal-overlay" onClick={cancelEdit}>
+          <div
+            className="my-products-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="my-products-modal__header">
               <h2>Editar anúncio</h2>
               <button type="button" onClick={cancelEdit}>
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="edit-form">
-              <label>
-                Título
+            <form className="my-products-form" onSubmit={handleSubmit}>
+              <div className="my-products-form__field">
+                <label htmlFor="title">Título</label>
                 <input
+                  id="title"
                   value={form.title}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, title: e.target.value }))
                   }
                   required
                 />
-              </label>
+              </div>
 
-              <label>
-                Descrição
+              <div className="my-products-form__field">
+                <label htmlFor="description">Descrição</label>
                 <textarea
+                  id="description"
                   value={form.description}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, description: e.target.value }))
                   }
                   required
                 />
-              </label>
+              </div>
 
-              <label>
-                Preço
+              <div className="my-products-form__field">
+                <label htmlFor="price">Preço</label>
                 <input
+                  id="price"
                   type="number"
                   min="0"
                   step="0.01"
@@ -240,11 +262,12 @@ export default function MyProducts() {
                   }
                   required
                 />
-              </label>
+              </div>
 
-              <label>
-                Categoria
+              <div className="my-products-form__field">
+                <label htmlFor="category">Categoria</label>
                 <select
+                  id="category"
                   value={form.category}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, category: e.target.value }))
@@ -256,11 +279,12 @@ export default function MyProducts() {
                     </option>
                   ))}
                 </select>
-              </label>
+              </div>
 
-              <label>
-                Nova imagem
+              <div className="my-products-form__field">
+                <label htmlFor="image">Nova imagem</label>
                 <input
+                  id="image"
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
@@ -270,14 +294,18 @@ export default function MyProducts() {
                     }))
                   }
                 />
-              </label>
+              </div>
 
-              <div className="edit-form-actions">
-                <button type="button" className="btn-secondary" onClick={cancelEdit}>
+              <div className="my-products-form__actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={cancelEdit}
+                >
                   Cancelar
                 </button>
 
-                <button type="submit" className="btn-primary" disabled={saving}>
+                <button type="submit" className="primary-button" disabled={saving}>
                   {saving ? "Salvando..." : "Salvar alterações"}
                 </button>
               </div>

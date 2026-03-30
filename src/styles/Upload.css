@@ -23,9 +23,20 @@
   color: #111827;
 }
 
+.upload-card h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #111827;
+}
+
 .upload-header p {
   margin: 0;
   color: #6b7280;
+}
+
+.upload-card p {
+  margin: 0;
+  color: #1c2a48;
 }
 
 .upload-alert {

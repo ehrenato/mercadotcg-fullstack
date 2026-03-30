@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getProductById, type Product } from "../services/api";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
-import "./styles/ProductPage.css";
+import "../styles/ProductPage.css";
 
 const API_ORIGIN = "http://localhost:3001";
 
@@ -22,7 +22,6 @@ function getImageSrc(imageUrl?: string | null) {
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const { addToCart } = useCart();
   const { favorites, toggleFavorite } = useFavorites();
 
@@ -50,7 +49,7 @@ export default function ProductPage() {
       }
     }
 
-    loadProduct();
+    void loadProduct();
   }, [id]);
 
   const isFavorite = useMemo(() => {
@@ -58,73 +57,55 @@ export default function ProductPage() {
     return favorites.some((item) => item.id === product.id);
   }, [favorites, product]);
 
+  function showFeedback(message: string) {
+    setFeedback(message);
+    window.setTimeout(() => setFeedback(""), 1800);
+  }
+
   function handleAddToCart() {
     if (!product) return;
-
     addToCart(product);
-    setFeedback("Produto adicionado ao carrinho.");
-
-    setTimeout(() => {
-      setFeedback("");
-    }, 1800);
+    showFeedback("Produto adicionado ao carrinho.");
   }
 
   function handleToggleFavorite() {
     if (!product) return;
-
     toggleFavorite(product);
-    setFeedback(
+    showFeedback(
       isFavorite
         ? "Produto removido dos favoritos."
         : "Produto adicionado aos favoritos."
     );
-
-    setTimeout(() => {
-      setFeedback("");
-    }, 1800);
   }
 
   if (loading) {
     return (
-      <section className="product-page">
-        <div className="product-skeleton">
-          <div className="product-skeleton-image skeleton" />
-          <div className="product-skeleton-content">
-            <div className="skeleton skeleton-line short" />
-            <div className="skeleton skeleton-line" />
-            <div className="skeleton skeleton-line" />
-            <div className="skeleton skeleton-line short" />
-            <div className="skeleton skeleton-box" />
-          </div>
-        </div>
+      <section className="product-page-state">
+        <p>Carregando produto...</p>
       </section>
     );
   }
 
   if (error) {
     return (
-      <section className="product-page">
-        <div className="product-state error">
-          <h2>Não foi possível carregar o produto</h2>
-          <p>{error}</p>
-          <Link to="/" className="product-back-link">
-            Voltar para a Home
-          </Link>
-        </div>
+      <section className="product-page-state">
+        <h2>Não foi possível carregar o produto</h2>
+        <p>{error}</p>
+        <Link to="/" className="primary-button">
+          Voltar para a Home
+        </Link>
       </section>
     );
   }
 
   if (!product) {
     return (
-      <section className="product-page">
-        <div className="product-state">
-          <h2>Produto não encontrado</h2>
-          <p>O anúncio solicitado não existe ou foi removido.</p>
-          <Link to="/" className="product-back-link">
-            Voltar para a Home
-          </Link>
-        </div>
+      <section className="product-page-state">
+        <h2>Produto não encontrado</h2>
+        <p>O anúncio solicitado não existe ou foi removido.</p>
+        <Link to="/" className="primary-button">
+          Voltar para a Home
+        </Link>
       </section>
     );
   }
@@ -141,59 +122,54 @@ export default function ProductPage() {
 
       {feedback && <div className="product-feedback">{feedback}</div>}
 
-      <div className="product-layout">
-        <div className="product-gallery">
-          <div className="product-main-image-wrapper">
-            <img
-              src={getImageSrc(product.image_url)}
-              alt={product.title}
-              className="product-main-image"
-            />
-          </div>
+      <div className="product-page__grid">
+        <div className="product-gallery-card">
+          <img
+            className="product-gallery-card__image"
+            src={getImageSrc(product.image_url)}
+            alt={product.title}
+          />
         </div>
 
-        <div className="product-info-card">
-          <span className="product-category-badge">{product.category}</span>
+        <aside className="product-info-card">
+          <span className="product-info-card__badge">{product.category}</span>
 
           <h1>{product.title}</h1>
 
-          <p className="product-seller">
-            Vendido por{" "}
-            <strong>{product.seller_name || "Vendedor da plataforma"}</strong>
+          <p className="product-info-card__seller">
+            Vendido por {product.seller_name || "Vendedor da plataforma"}
           </p>
 
-          <div className="product-price-box">
-            <strong>R$ {Number(product.price).toFixed(2)}</strong>
-            <span>em até 12x no cartão</span>
+          <div className="product-info-card__price">
+            R$ {Number(product.price).toFixed(2)}
           </div>
 
-          <div className="product-description-box">
-            <h3>Descrição</h3>
-            <p>{product.description}</p>
-          </div>
+          <p className="product-info-card__installments">
+            em até 12x no cartão
+          </p>
 
-          <div className="product-actions">
-            <button type="button" className="btn-buy" onClick={handleAddToCart}>
+          <div className="product-info-card__actions">
+            <button className="primary-button" onClick={handleAddToCart}>
               Adicionar ao carrinho
             </button>
 
-            <button
-              type="button"
-              className="btn-favorite"
-              onClick={handleToggleFavorite}
-            >
+            <button className="secondary-button" onClick={handleToggleFavorite}>
               {isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             </button>
 
             <button
-              type="button"
-              className="btn-secondary"
+              className="ghost-button"
               onClick={() => navigate("/carrinho")}
             >
               Ir para o carrinho
             </button>
           </div>
-        </div>
+        </aside>
+      </div>
+
+      <div className="product-description-card">
+        <h3>Descrição</h3>
+        <p>{product.description}</p>
       </div>
     </section>
   );
