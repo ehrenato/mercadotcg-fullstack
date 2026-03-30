@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProductById } from "../services/api";
-import type { Product } from "../types/Product";
+import { getProductById, type Product } from "../services/api";
 
 export function useProduct(id: number) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -9,9 +8,16 @@ export function useProduct(id: number) {
     let active = true;
 
     async function load() {
-      const data = await getProductById(id);
-      if (active) {
-        setProduct(data);
+      try {
+        const data = await getProductById(id);
+
+        if (active) {
+          setProduct(data);
+        }
+      } catch {
+        if (active) {
+          setProduct(null);
+        }
       }
     }
 

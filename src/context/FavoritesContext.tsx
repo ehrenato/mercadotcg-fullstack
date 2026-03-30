@@ -30,18 +30,10 @@ type FavoritesProviderProps = {
 function getInitialFavorites(): Product[] {
   try {
     const stored = localStorage.getItem(FAVORITES_STORAGE_KEY);
-
-    if (!stored) {
-      return [];
-    }
+    if (!stored) return [];
 
     const parsed = JSON.parse(stored) as Product[];
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
@@ -57,12 +49,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
   function addFavorite(product: Product) {
     setFavorites((prev) => {
       const alreadyExists = prev.some((item) => item.id === product.id);
-
-      if (alreadyExists) {
-        return prev;
-      }
-
-      return [...prev, product];
+      return alreadyExists ? prev : [...prev, product];
     });
   }
 

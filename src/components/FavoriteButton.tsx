@@ -1,5 +1,5 @@
 import { useFavorites } from "../context/FavoritesContext";
-import type { Product } from "../types/Product";
+import type { Product } from "../services/api";
 
 type FavoriteButtonProps = {
   product: Product;
@@ -7,15 +7,16 @@ type FavoriteButtonProps = {
 
 export default function FavoriteButton({ product }: FavoriteButtonProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(product.id);
 
   return (
     <button
       type="button"
-      className="ghost-button"
       onClick={() => toggleFavorite(product)}
       aria-label="Adicionar aos favoritos"
+      className="favorite-button"
     >
-      {isFavorite(product.id) ? "❤️" : "🤍"}
+      {favorite ? "❤️" : "🤍"}
     </button>
   );
 }

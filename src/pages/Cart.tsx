@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { useCart, type CartItem } from "../context/CartContext";
-import { createOrder } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { createOrder } from "../services/api";
 import "../styles/Cart.css";
 
 export default function Cart() {
   const {
-  cartItems,
-  removeFromCart,
-  increaseQuantity,
-  decreaseQuantity,
-  totalPrice,
-} = useCart();
+    cartItems,
+    removeFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+    totalPrice,
+    clearCart,
+  } = useCart();
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -26,11 +27,8 @@ export default function Cart() {
       }));
 
       await createOrder({ items });
-
       clearCart();
-
       alert("Pedido realizado com sucesso!");
-
       navigate("/pedidos");
     } catch (error) {
       alert((error as Error).message);
@@ -41,85 +39,61 @@ export default function Cart() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="cart-empty">
+      <section className="cart-page">
         <h2>Seu carrinho está vazio</h2>
-        <p>Adicione produtos para continuar</p>
-        <button onClick={() => navigate("/")}>Ir para produtos</button>
-      </div>
+        <p>Adicione produtos para continuar.</p>
+        <button type="button" onClick={() => navigate("/")}>
+          Ir para produtos
+        </button>
+      </section>
     );
   }
 
-  function addToCart(item: CartItem): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function clearCart(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
-    <div className="cart-container">
+    <section className="cart-page">
+      <h2>Carrinho</h2>
+
       <div className="cart-list">
-        <h2>Carrinho</h2>
-
         {cartItems.map((item) => (
-          <div key={item.id} className="cart-item">
-            <img
-              src={item.image_url || "/placeholder.png"}
-              alt={item.title}
-            />
+          <article key={item.id} className="cart-item">
+            <h3>{item.title}</h3>
+            <p>R$ {Number(item.price).toFixed(2)}</p>
 
-            <div className="cart-info">
-              <h3>{item.title}</h3>
-              <p>R$ {Number(item.price).toFixed(2)}</p>
-
-              <div className="cart-actions">
-                <button onClick={() => decreaseQuantity(item.id)}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => addToCart(item)}>+</button>
-              </div>
-            </div>
-
-            <div className="cart-right">
-              <strong>
-                R$ {(item.quantity * Number(item.price)).toFixed(2)}
-              </strong>
-
-              <button
-                className="remove-btn"
-                onClick={() => removeFromCart(item.id)}
-              >
-                Remover
+            <div className="cart-qty">
+              <button type="button" onClick={() => decreaseQuantity(item.id)}>
+                -
+              </button>
+              <span>{item.quantity}</span>
+              <button type="button" onClick={() => increaseQuantity(item.id)}>
+                +
               </button>
             </div>
-          </div>
+
+            <strong>
+              R$ {(item.quantity * Number(item.price)).toFixed(2)}
+            </strong>
+
+            <button type="button" onClick={() => removeFromCart(item.id)}>
+              Remover
+            </button>
+          </article>
         ))}
       </div>
 
-      <div className="cart-summary">
+      <aside className="cart-summary">
         <h3>Resumo</h3>
+        <p>Total: R$ {totalPrice.toFixed(2)}</p>
 
-        <div className="summary-row">
-          <span>Total:</span>
-          <strong>R$ {totalPrice.toFixed(2)}</strong>
+        <div style={{ display: "flex", gap: 12 }}>
+          <button type="button" onClick={handleCheckout} disabled={loading}>
+            {loading ? "Finalizando..." : "Finalizar compra"}
+          </button>
+
+          <button type="button" onClick={clearCart}>
+            Limpar carrinho
+          </button>
         </div>
-
-        <button
-          className="checkout-btn"
-          onClick={handleCheckout}
-          disabled={loading}
-        >
-          {loading ? "Finalizando..." : "Finalizar compra"}
-        </button>
-
-        <button className="clear-btn" onClick={clearCart}>
-          Limpar carrinho
-        </button>
-      </div>
-    </div>
+      </aside>
+    </section>
   );
-}
-
-function clearCart() {
-  throw new Error("Function not implemented.");
 }

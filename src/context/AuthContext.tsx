@@ -6,18 +6,14 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
 import {
   clearAuthSession,
   getAuthSession,
-  login,
-  register,
+  login as apiLogin,
   me,
+  register as apiRegister,
   type User,
 } from "../services/api";
-
-export type AuthUser = User;
-export type AuthContextUser = User;
 
 type AuthContextValue = {
   user: User | null;
@@ -65,17 +61,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
 
-    bootstrapAuth();
+    void bootstrapAuth();
   }, []);
 
   async function handleLogin(email: string, password: string) {
-    const response = await login({ email, password });
+    const response = await apiLogin({ email, password });
     localStorage.setItem("token", response.token);
     setUser(response.user);
   }
 
   async function handleRegister(name: string, email: string, password: string) {
-    const response = await register({ name, email, password });
+    const response = await apiRegister({ name, email, password });
     localStorage.setItem("token", response.token);
     setUser(response.user);
   }
@@ -89,7 +85,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     () => ({
       user,
       loading,
-      isAuthenticated: !!user,
+      isAuthenticated: Boolean(user),
       login: handleLogin,
       register: handleRegister,
       logout: handleLogout,

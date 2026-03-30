@@ -19,10 +19,19 @@ export type Product = {
   created_at?: string;
 };
 
+export type OrderItem = {
+  id: number;
+  product_id: number;
+  quantity: number;
+  unit_price: number;
+  title: string;
+};
+
 export type Order = {
   id: number;
   total: number;
   created_at: string;
+  items: OrderItem[];
 };
 
 export type OrderItemInput = {
@@ -187,13 +196,18 @@ export async function deleteProduct(id: number) {
   return handleResponse<{ message: string }>(response);
 }
 
-export async function getOrders() {
+export async function getOrders(): Promise<Order[]> {
   const response = await fetch(`${API_BASE_URL}/orders`, {
-    method: "GET",
     headers: getAuthHeaders(),
   });
 
-  return handleResponse<Order[]>(response);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Erro ao buscar pedidos");
+  }
+
+  return data;
 }
 
 export async function createOrder(data: { items: OrderItemInput[] }) {

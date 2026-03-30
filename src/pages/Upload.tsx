@@ -15,7 +15,6 @@ export default function Upload() {
   const [description, setDescription] = useState("");
   const [condition, setCondition] = useState("Excelente");
   const [image, setImage] = useState<File | null>(null);
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -31,10 +30,7 @@ export default function Upload() {
       formData.append("title", title);
       formData.append("price", price);
       formData.append("category", category);
-      formData.append(
-        "description",
-        `${description}\n\nCondição do item: ${condition}`
-      );
+      formData.append("description", `${description}\n\nCondição do item: ${condition}`);
 
       if (image) {
         formData.append("image", image);
@@ -43,7 +39,6 @@ export default function Upload() {
       await createProduct(formData);
 
       setSuccess("Anúncio publicado com sucesso!");
-
       setTitle("");
       setPrice("");
       setCategory("Pokémon");
@@ -55,9 +50,7 @@ export default function Upload() {
         navigate("/meus-anuncios");
       }, 900);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao publicar anúncio."
-      );
+      setError(err instanceof Error ? err.message : "Erro ao publicar anúncio.");
     } finally {
       setSubmitting(false);
     }
@@ -66,76 +59,55 @@ export default function Upload() {
   return (
     <section className="upload-page">
       <div className="upload-card">
-        <div className="upload-header">
-          <h1>Criar anúncio</h1>
-          <p>
-            Preencha os dados do produto e publique seu anúncio no marketplace.
-          </p>
-        </div>
+        <h1>Criar anúncio</h1>
+        <p>Preencha os dados do produto e publique seu anúncio no marketplace.</p>
 
-        {success && <div className="upload-alert success">{success}</div>}
-        {error && <div className="upload-alert error">{error}</div>}
+        {success && <div className="upload-success">{success}</div>}
+        {error && <div className="upload-error">{error}</div>}
 
-        <form className="upload-form" onSubmit={handleSubmit}>
-          <div className="upload-grid">
-            <label>
-              Título
-              <input
-                type="text"
-                placeholder="Ex.: Charizard Holográfico 1999"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-            </label>
+        <form onSubmit={handleSubmit} className="upload-form">
+          <label>
+            Título
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          </label>
 
-            <label>
-              Preço
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0,00"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
-            </label>
+          <label>
+            Preço
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+          </label>
 
-            <label>
-              Categoria
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                {categories.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <label>
+            Categoria
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              {categories.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
 
-            <label>
-              Condição
-              <select
-                value={condition}
-                onChange={(e) => setCondition(e.target.value)}
-              >
-                {conditions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+          <label>
+            Condição
+            <select value={condition} onChange={(e) => setCondition(e.target.value)}>
+              {conditions.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <label>
             Descrição
             <textarea
-              rows={6}
-              placeholder="Descreva detalhes importantes do item, edição, estado de conservação, observações, etc."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
@@ -160,11 +132,7 @@ export default function Upload() {
               Cancelar
             </button>
 
-            <button
-              type="submit"
-              className="upload-primary"
-              disabled={submitting}
-            >
+            <button type="submit" className="upload-primary" disabled={submitting}>
               {submitting ? "Publicando..." : "Publicar anúncio"}
             </button>
           </div>

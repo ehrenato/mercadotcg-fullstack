@@ -36,18 +36,10 @@ type CartProviderProps = {
 function getInitialCart(): CartItem[] {
   try {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
-
-    if (!stored) {
-      return [];
-    }
+    if (!stored) return [];
 
     const parsed = JSON.parse(stored) as CartItem[];
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
@@ -62,9 +54,9 @@ export function CartProvider({ children }: CartProviderProps) {
 
   function addToCart(product: Product) {
     setCartItems((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
+      const existing = prev.find((item) => item.id === product.id);
 
-      if (existingItem) {
+      if (existing) {
         return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -115,16 +107,19 @@ export function CartProvider({ children }: CartProviderProps) {
     return item?.quantity ?? 0;
   }
 
-  const totalItems = useMemo(() => {
-    return cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  }, [cartItems]);
+  const totalItems = useMemo(
+    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
+    [cartItems]
+  );
 
-  const totalPrice = useMemo(() => {
-    return cartItems.reduce(
-      (acc, item) => acc + Number(item.price) * item.quantity,
-      0
-    );
-  }, [cartItems]);
+  const totalPrice = useMemo(
+    () =>
+      cartItems.reduce(
+        (acc, item) => acc + Number(item.price) * item.quantity,
+        0
+      ),
+    [cartItems]
+  );
 
   const value = useMemo<CartContextValue>(
     () => ({

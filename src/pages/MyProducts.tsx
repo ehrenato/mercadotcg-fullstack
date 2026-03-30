@@ -16,7 +16,6 @@ type EditFormState = {
 };
 
 const categories = ["Pokémon", "Treinador", "Energia", "Acessórios"];
-
 const API_ORIGIN = "http://localhost:3001";
 
 function getImageSrc(imageUrl?: string | null) {
@@ -38,7 +37,6 @@ export default function MyProducts() {
   const [success, setSuccess] = useState("");
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
-
   const [form, setForm] = useState<EditFormState>({
     title: "",
     description: "",
@@ -55,9 +53,7 @@ export default function MyProducts() {
       setProducts(data);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Erro ao carregar seus anúncios."
+        err instanceof Error ? err.message : "Erro ao carregar seus anúncios."
       );
     } finally {
       setLoading(false);
@@ -65,7 +61,7 @@ export default function MyProducts() {
   }
 
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, []);
 
   const editingProduct = useMemo(
@@ -98,20 +94,13 @@ export default function MyProducts() {
   }
 
   async function handleDelete(id: number) {
-    const confirmed = window.confirm(
-      "Tem certeza que deseja excluir este anúncio?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
+    const confirmed = window.confirm("Tem certeza que deseja excluir este anúncio?");
+    if (!confirmed) return;
 
     try {
       setError("");
       setSuccess("");
-
       await deleteProduct(id);
-
       setProducts((prev) => prev.filter((product) => product.id !== id));
 
       if (editingProductId === id) {
@@ -120,18 +109,14 @@ export default function MyProducts() {
 
       setSuccess("Anúncio excluído com sucesso.");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao excluir anúncio."
-      );
+      setError(err instanceof Error ? err.message : "Erro ao excluir anúncio.");
     }
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!editingProductId) {
-      return;
-    }
+    if (!editingProductId) return;
 
     try {
       setSaving(true);
@@ -159,68 +144,51 @@ export default function MyProducts() {
       setSuccess("Anúncio atualizado com sucesso.");
       cancelEdit();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao atualizar anúncio."
-      );
+      setError(err instanceof Error ? err.message : "Erro ao atualizar anúncio.");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <section className="my-products-page">
-      <div className="my-products-header">
-        <div>
-          <h1>Meus anúncios</h1>
-          <p>
-            Gerencie seus produtos anunciados, atualize informações e exclua
-            quando quiser.
-          </p>
-        </div>
-      </div>
+    <section>
+      <h1>Meus anúncios</h1>
+      <p>
+        Gerencie seus produtos anunciados, atualize informações e exclua quando
+        quiser.
+      </p>
 
-      {error && <div className="my-products-alert error">{error}</div>}
-      {success && <div className="my-products-alert success">{success}</div>}
+      {error && <div>{error}</div>}
+      {success && <div>{success}</div>}
 
       {loading ? (
-        <div className="my-products-empty">Carregando seus anúncios...</div>
+        <div>Carregando seus anúncios...</div>
       ) : products.length === 0 ? (
-        <div className="my-products-empty">
-          Você ainda não possui anúncios cadastrados.
-        </div>
+        <div>Você ainda não possui anúncios cadastrados.</div>
       ) : (
-        <div className="my-products-grid">
+        <div className="home-grid">
           {products.map((product) => (
-            <article key={product.id} className="my-product-card">
+            <article key={product.id} className="product-card">
               <img
                 src={getImageSrc(product.image_url)}
                 alt={product.title}
-                className="my-product-image"
+                className="product-card-image"
               />
 
-              <div className="my-product-body">
-                <span className="my-product-category">{product.category}</span>
+              <div className="product-card-body">
+                <span className="product-category">{product.category}</span>
                 <h3>{product.title}</h3>
                 <p>{product.description}</p>
                 <strong>R$ {Number(product.price).toFixed(2)}</strong>
-              </div>
 
-              <div className="my-product-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => startEdit(product)}
-                >
-                  Editar
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-danger"
-                  onClick={() => handleDelete(product.id)}
-                >
-                  Excluir
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button type="button" onClick={() => startEdit(product)}>
+                    Editar
+                  </button>
+                  <button type="button" onClick={() => handleDelete(product.id)}>
+                    Excluir
+                  </button>
+                </div>
               </div>
             </article>
           ))}
@@ -232,26 +200,18 @@ export default function MyProducts() {
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
               <h2>Editar anúncio</h2>
-              <button
-                type="button"
-                className="close-button"
-                onClick={cancelEdit}
-              >
+              <button type="button" onClick={cancelEdit}>
                 ×
               </button>
             </div>
 
-            <form className="edit-form" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="edit-form">
               <label>
                 Título
                 <input
-                  type="text"
                   value={form.title}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      title: e.target.value,
-                    }))
+                    setForm((prev) => ({ ...prev, title: e.target.value }))
                   }
                   required
                 />
@@ -260,13 +220,9 @@ export default function MyProducts() {
               <label>
                 Descrição
                 <textarea
-                  rows={4}
                   value={form.description}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
+                    setForm((prev) => ({ ...prev, description: e.target.value }))
                   }
                   required
                 />
@@ -280,10 +236,7 @@ export default function MyProducts() {
                   step="0.01"
                   value={form.price}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      price: e.target.value,
-                    }))
+                    setForm((prev) => ({ ...prev, price: e.target.value }))
                   }
                   required
                 />
@@ -294,10 +247,7 @@ export default function MyProducts() {
                 <select
                   value={form.category}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      category: e.target.value,
-                    }))
+                    setForm((prev) => ({ ...prev, category: e.target.value }))
                   }
                 >
                   {categories.map((category) => (
@@ -323,19 +273,11 @@ export default function MyProducts() {
               </label>
 
               <div className="edit-form-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={cancelEdit}
-                >
+                <button type="button" className="btn-secondary" onClick={cancelEdit}>
                   Cancelar
                 </button>
 
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={saving}
-                >
+                <button type="submit" className="btn-primary" disabled={saving}>
                   {saving ? "Salvando..." : "Salvar alterações"}
                 </button>
               </div>

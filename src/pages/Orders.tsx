@@ -12,6 +12,7 @@ export default function Orders() {
     async function loadOrders() {
       try {
         const data = await getOrders();
+
         if (active) {
           setOrders(data);
         }
@@ -34,39 +35,44 @@ export default function Orders() {
   }, []);
 
   if (loading) {
-    return <main className="container page-state">Carregando pedidos...</main>;
+    return <div>Carregando pedidos...</div>;
   }
 
   return (
-    <main className="container grid gap-md">
-      <div>
-        <h1>Meus pedidos</h1>
-        <p className="muted">Pedidos reais vindos do backend.</p>
-      </div>
+    <section>
+      <h1>Meus pedidos</h1>
+      <p>Pedidos reais vindos do backend.</p>
 
-      {error ? <p className="error-text">{error}</p> : null}
+      {error ? <div>{error}</div> : null}
 
       {orders.length === 0 ? (
-        <article className="card grid gap-sm">
+        <div>
           <h2>Nenhum pedido encontrado</h2>
-          <p className="muted">Finalize uma compra para ver seus pedidos aqui.</p>
-        </article>
+          <p>Finalize uma compra para ver seus pedidos aqui.</p>
+        </div>
       ) : (
         orders.map((order) => (
-          <article key={order.id} className="card grid gap-sm">
-            <div className="row-between wrap gap-sm">
-              <h2>Pedido #{order.id}</h2>
-              <span className="badge">{order.status}</span>
-            </div>
-            <strong>Total: R$ {order.total.toFixed(2)}</strong>
+          <article key={order.id}>
+            <h2>Pedido #{order.id}</h2>
+            <p>Total: R$ {Number(order.total).toFixed(2)}</p>
+            <p>
+              Data:{" "}
+              {new Date(order.created_at).toLocaleString("pt-BR", {
+                dateStyle: "short",
+                timeStyle: "short",
+              })}
+            </p>
+
             <ul>
               {order.items.map((item) => (
-                <li key={`${order.id}-${item}`}>{item}</li>
+                <li key={item.id}>
+                  {item.title} — {item.quantity}x — R$ {Number(item.unit_price).toFixed(2)}
+                </li>
               ))}
             </ul>
           </article>
         ))
       )}
-    </main>
+    </section>
   );
 }

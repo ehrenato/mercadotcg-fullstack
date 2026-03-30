@@ -22,7 +22,6 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
 
@@ -38,21 +37,19 @@ export default function Home() {
 
       setProducts(data);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao carregar produtos."
-      );
+      setError(err instanceof Error ? err.message : "Erro ao carregar produtos.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, [selectedCategory]);
 
   function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    loadProducts();
+    void loadProducts();
   }
 
   const totalProductsLabel = useMemo(() => {
@@ -65,21 +62,19 @@ export default function Home() {
   return (
     <section className="home-page">
       <div className="home-hero">
-        <div>
-          <span className="home-badge">Marketplace de cartas Pokémon</span>
-          <h1>Encontre cartas raras, itens colecionáveis e acessórios.</h1>
-          <p>
-            Explore anúncios da comunidade, filtre por categoria e encontre as
-            melhores oportunidades para sua coleção.
-          </p>
-        </div>
+        <span className="home-badge">Marketplace de cartas Pokémon</span>
+        <h1>Encontre cartas raras, itens colecionáveis e acessórios.</h1>
+        <p>
+          Explore anúncios da comunidade, filtre por categoria e encontre as
+          melhores oportunidades para sua coleção.
+        </p>
       </div>
 
       <div className="home-toolbar">
         <form className="home-search" onSubmit={handleSearchSubmit}>
           <input
             type="text"
-            placeholder="Buscar por nome do produto..."
+            placeholder="Buscar por título..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -91,19 +86,17 @@ export default function Home() {
             <button
               key={category}
               type="button"
-              className={
-                selectedCategory === category ? "filter-chip active" : "filter-chip"
-              }
+              className={`filter-chip ${
+                selectedCategory === category ? "active" : ""
+              }`}
               onClick={() => setSelectedCategory(category)}
             >
               {category}
             </button>
           ))}
         </div>
-      </div>
 
-      <div className="home-results-header">
-        <strong>{totalProductsLabel}</strong>
+        <div className="home-results-header">{totalProductsLabel}</div>
       </div>
 
       {error && <div className="home-alert error">{error}</div>}
@@ -111,7 +104,7 @@ export default function Home() {
       {loading ? (
         <div className="home-grid">
           {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="product-card skeleton-card">
+            <article key={index} className="product-card skeleton-card">
               <div className="skeleton skeleton-image" />
               <div className="product-card-body">
                 <div className="skeleton skeleton-line short" />
@@ -119,7 +112,7 @@ export default function Home() {
                 <div className="skeleton skeleton-line" />
                 <div className="skeleton skeleton-line short" />
               </div>
-            </div>
+            </article>
           ))}
         </div>
       ) : products.length === 0 ? (
@@ -130,7 +123,10 @@ export default function Home() {
         <div className="home-grid">
           {products.map((product) => (
             <article key={product.id} className="product-card">
-              <Link to={`/produto/${product.id}`} className="product-card-image-link">
+              <Link
+                to={`/produto/${product.id}`}
+                className="product-card-image-link"
+              >
                 <img
                   src={getImageSrc(product.image_url)}
                   alt={product.title}
@@ -141,7 +137,10 @@ export default function Home() {
               <div className="product-card-body">
                 <span className="product-category">{product.category}</span>
 
-                <Link to={`/produto/${product.id}`} className="product-title-link">
+                <Link
+                  to={`/produto/${product.id}`}
+                  className="product-title-link"
+                >
                   <h3>{product.title}</h3>
                 </Link>
 

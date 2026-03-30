@@ -16,7 +16,32 @@ router.get("/", requireAuth, async (req, res) => {
       [req.user.id]
     );
 
-    return res.json(orders);
+    const ordersWithItems = await Promise.all(
+      orders.map(async (order) => {
+        const items = await all(
+          `
+            SELECT
+              oi.id,
+              oi.product_id,
+              oi.quantity,
+              oi.unit_price,
+              p.title
+            FROM order_items oi
+            INNER JOIN products p ON p.id = oi.product_id
+            WHERE oi.order_id = ?
+            ORDER BY oi.id DESC
+          `,
+          [order.id]
+        );
+
+        return {
+          ...order,
+          items,
+        };
+      })
+    );
+
+    return res.json(ordersWithItems);
   } catch (error) {
     console.error("get orders error:", error);
     return res.status(500).json({ message: "Erro ao buscar pedidos." });
@@ -35,15 +60,14 @@ router.post("/", requireAuth, async (req, res) => {
     const resolvedItems = [];
 
     for (const item of items) {
-      const product = await get(
-        "SELECT id, price FROM products WHERE id = ?",
-        [item.productId]
-      );
+      const product = await get("SELECT id, price FROM products WHERE id = ?", [
+        item.productId,
+      ]);
 
       if (!product) {
-        return res.status(404).json({
-          message: `Produto ${item.productId} não encontrado.`
-        });
+        return res
+          .status(404)
+          .json({ message: `Produto ${item.productId} não encontrado.` });
       }
 
       const quantity = Number(item.quantity) || 1;
@@ -52,7 +76,7 @@ router.post("/", requireAuth, async (req, res) => {
       resolvedItems.push({
         productId: product.id,
         quantity,
-        unitPrice
+        unitPrice,
       });
 
       total += unitPrice * quantity;
@@ -75,7 +99,7 @@ router.post("/", requireAuth, async (req, res) => {
 
     return res.status(201).json({
       message: "Pedido criado com sucesso.",
-      orderId: orderResult.lastID
+      orderId: orderResult.lastID,
     });
   } catch (error) {
     console.error("create order error:", error);
