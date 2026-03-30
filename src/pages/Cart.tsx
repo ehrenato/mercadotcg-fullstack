@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { useCart } from "../context/CartContext";
+import { useCart, type CartItem } from "../context/CartContext";
 import { createOrder } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "../styles/Cart.css";
 
 export default function Cart() {
   const {
-    cartItems,
-    addToCart,
-    decreaseQuantity,
-    removeFromCart,
-    clearCart,
-    cartTotal,
-  } = useCart();
+  cartItems,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  totalPrice,
+} = useCart();
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -48,6 +47,14 @@ export default function Cart() {
         <button onClick={() => navigate("/")}>Ir para produtos</button>
       </div>
     );
+  }
+
+  function addToCart(item: CartItem): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function clearCart(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    throw new Error("Function not implemented.");
   }
 
   return (
@@ -94,7 +101,7 @@ export default function Cart() {
 
         <div className="summary-row">
           <span>Total:</span>
-          <strong>R$ {cartTotal.toFixed(2)}</strong>
+          <strong>R$ {totalPrice.toFixed(2)}</strong>
         </div>
 
         <button
@@ -111,4 +118,8 @@ export default function Cart() {
       </div>
     </div>
   );
+}
+
+function clearCart() {
+  throw new Error("Function not implemented.");
 }

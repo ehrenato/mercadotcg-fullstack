@@ -1,113 +1,175 @@
-import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createProduct } from "../services/api";
+import "../styles/Upload.css";
+
+const categories = ["Pokémon", "Treinador", "Energia", "Acessórios"];
+const conditions = ["Excelente", "Muito boa", "Boa", "Regular"];
 
 export default function Upload() {
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Pokémon");
   const [description, setDescription] = useState("");
   const [condition, setCondition] = useState("Excelente");
   const [image, setImage] = useState<File | null>(null);
-  const [status, setStatus] = useState("");
-  const [error, setError] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
-    setStatus("");
     setError("");
+    setSuccess("");
 
     try {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("price", price);
       formData.append("category", category);
-      formData.append("description", description);
-      formData.append("condition", condition);
+      formData.append(
+        "description",
+        `${description}\n\nCondição do item: ${condition}`
+      );
+
       if (image) {
         formData.append("image", image);
       }
 
-      const created = await createProduct(formData);
-      setStatus(`Produto "${created.title}" enviado com sucesso.`);
+      await createProduct(formData);
+
+      setSuccess("Anúncio publicado com sucesso!");
+
       setTitle("");
       setPrice("");
-      setCategory("");
+      setCategory("Pokémon");
       setDescription("");
       setCondition("Excelente");
       setImage(null);
-    } catch (caughtError) {
-      if (axios.isAxiosError(caughtError)) {
-        setError(caughtError.response?.data?.message ?? "Não foi possível publicar o anúncio.");
-      } else {
-        setError("Não foi possível publicar o anúncio.");
-      }
+
+      setTimeout(() => {
+        navigate("/meus-anuncios");
+      }, 900);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao publicar anúncio."
+      );
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-card">
-        <div>
-          <span className="badge">Área do vendedor</span>
+    <section className="upload-page">
+      <div className="upload-card">
+        <div className="upload-header">
           <h1>Criar anúncio</h1>
-          <p className="muted">Insira abaixo as informações do seu anúncio.</p>
+          <p>
+            Preencha os dados do produto e publique seu anúncio no marketplace.
+          </p>
         </div>
 
-        <form className="grid gap-md" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Título do produto"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            required
-          />
-          <input
-            type="number"
-            placeholder="Preço"
-            min="0"
-            step="0.01"
-            value={price}
-            onChange={(event) => setPrice(event.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Categoria"
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-            required
-          />
-          <textarea
-            placeholder="Descrição do produto"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            rows={4}
-            required
-          />
-          <select value={condition} onChange={(event) => setCondition(event.target.value)}>
-            <option value="Excelente">Excelente</option>
-            <option value="Near Mint">Near Mint</option>
-            <option value="Muito boa">Muito boa</option>
-            <option value="Boa">Boa</option>
-          </select>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(event) => setImage(event.target.files?.[0] ?? null)}
-          />
-          <button type="submit" className="primary-button" disabled={submitting}>
-            {submitting ? "Publicando..." : "Publicar anúncio"}
-          </button>
-        </form>
+        {success && <div className="upload-alert success">{success}</div>}
+        {error && <div className="upload-alert error">{error}</div>}
 
-        {status ? <p className="success-text">{status}</p> : null}
-        {error ? <p className="error-text">{error}</p> : null}
-      </section>
-    </main>
+        <form className="upload-form" onSubmit={handleSubmit}>
+          <div className="upload-grid">
+            <label>
+              Título
+              <input
+                type="text"
+                placeholder="Ex.: Charizard Holográfico 1999"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </label>
+
+            <label>
+              Preço
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0,00"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+              />
+            </label>
+
+            <label>
+              Categoria
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {categories.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Condição
+              <select
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+              >
+                {conditions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Descrição
+            <textarea
+              rows={6}
+              placeholder="Descreva detalhes importantes do item, edição, estado de conservação, observações, etc."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </label>
+
+          <label>
+            Imagem do produto
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+            />
+          </label>
+
+          <div className="upload-actions">
+            <button
+              type="button"
+              className="upload-secondary"
+              onClick={() => navigate("/")}
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              className="upload-primary"
+              disabled={submitting}
+            >
+              {submitting ? "Publicando..." : "Publicar anúncio"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }

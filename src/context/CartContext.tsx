@@ -8,7 +8,7 @@ import {
 } from "react";
 import type { Product } from "../services/api";
 
-type CartItem = Product & {
+export type CartItem = Product & {
   quantity: number;
 };
 
@@ -16,65 +16,83 @@ type CartContextValue = {
   cartItems: CartItem[];
   addToCart: (product: Product) => void;
   removeFromCart: (productId: number) => void;
+  increaseQuantity: (productId: number) => void;
   decreaseQuantity: (productId: number) => void;
   clearCart: () => void;
   isInCart: (productId: number) => boolean;
   getItemQuantity: (productId: number) => number;
-  cartCount: number;
-  cartTotal: number;
+  totalItems: number;
+  totalPrice: number;
 };
 
-const CartContext = createContext<CartContextValue | undefined>(undefined);
+const CART_STORAGE_KEY = "mercadotcg_cart";
 
-const CART_STORAGE_KEY = "mercadotcg:cart";
+const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 type CartProviderProps = {
   children: ReactNode;
 };
 
-export function CartProvider({ children }: CartProviderProps) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+function getInitialCart(): CartItem[] {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
 
-  useEffect(() => {
-    try {
-      const storedCart = localStorage.getItem(CART_STORAGE_KEY);
-      if (storedCart) {
-        setCartItems(JSON.parse(storedCart) as CartItem[]);
-      }
-    } catch {
-      setCartItems([]);
+    if (!stored) {
+      return [];
     }
-  }, []);
+
+    const parsed = JSON.parse(stored) as CartItem[];
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed;
+  } catch {
+    return [];
+  }
+}
+
+export function CartProvider({ children }: CartProviderProps) {
+  const [cartItems, setCartItems] = useState<CartItem[]>(getInitialCart);
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
   function addToCart(product: Product) {
-    setCartItems((currentItems) => {
-      const existingItem = currentItems.find((item) => item.id === product.id);
+    setCartItems((prev) => {
+      const existingItem = prev.find((item) => item.id === product.id);
 
       if (existingItem) {
-        return currentItems.map((item) =>
+        return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
 
-      return [...currentItems, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1 }];
     });
   }
 
   function removeFromCart(productId: number) {
-    setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== productId)
+    setCartItems((prev) => prev.filter((item) => item.id !== productId));
+  }
+
+  function increaseQuantity(productId: number) {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
     );
   }
 
   function decreaseQuantity(productId: number) {
-    setCartItems((currentItems) =>
-      currentItems
+    setCartItems((prev) =>
+      prev
         .map((item) =>
           item.id === productId
             ? { ...item, quantity: item.quantity - 1 }
@@ -93,36 +111,35 @@ export function CartProvider({ children }: CartProviderProps) {
   }
 
   function getItemQuantity(productId: number) {
-    return cartItems.find((item) => item.id === productId)?.quantity ?? 0;
+    const item = cartItems.find((cartItem) => cartItem.id === productId);
+    return item?.quantity ?? 0;
   }
 
-  const cartCount = useMemo(
-    () => cartItems.reduce((total, item) => total + item.quantity, 0),
-    [cartItems]
-  );
+  const totalItems = useMemo(() => {
+    return cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  }, [cartItems]);
 
-  const cartTotal = useMemo(
-    () =>
-      cartItems.reduce(
-        (total, item) => total + Number(item.price) * item.quantity,
-        0
-      ),
-    [cartItems]
-  );
+  const totalPrice = useMemo(() => {
+    return cartItems.reduce(
+      (acc, item) => acc + Number(item.price) * item.quantity,
+      0
+    );
+  }, [cartItems]);
 
   const value = useMemo<CartContextValue>(
     () => ({
       cartItems,
       addToCart,
       removeFromCart,
+      increaseQuantity,
       decreaseQuantity,
       clearCart,
       isInCart,
       getItemQuantity,
-      cartCount,
-      cartTotal,
+      totalItems,
+      totalPrice,
     }),
-    [cartItems, cartCount, cartTotal]
+    [cartItems, totalItems, totalPrice]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

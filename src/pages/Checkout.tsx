@@ -6,7 +6,7 @@ import { createOrder } from "../services/api";
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { cart, clearCart } = useCart();
+  const { cartItems, totalPrice, clearCart } = useCart();
   const total = cart.reduce((sum, item) => sum + item.price, 0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
