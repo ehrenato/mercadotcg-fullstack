@@ -1,0 +1,282 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b1020;
+  color: #f5f7ff;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top, rgba(55, 89, 255, 0.2), transparent 30%),
+    linear-gradient(180deg, #0b1020 0%, #11182c 100%);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+input,
+textarea {
+  border: 0;
+  border-radius: 14px;
+}
+
+button {
+  cursor: pointer;
+}
+
+input {
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+.container {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0 2rem;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 16, 32, 0.85);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+}
+
+.hero,
+.card,
+.auth-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+}
+
+.hero {
+  min-height: 220px;
+  display: grid;
+  align-items: end;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+  display: grid;
+  gap: 1rem;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: grid;
+  gap: 1rem;
+}
+
+.card-media {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.card-media img,
+.product-hero,
+.thumbnail-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-body {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.product-layout,
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.row,
+.row-between {
+  display: flex;
+  align-items: center;
+}
+
+.row-between {
+  justify-content: space-between;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-xs { gap: 0.35rem; }
+.gap-sm { gap: 0.6rem; }
+.gap-md { gap: 1rem; }
+.gap-lg { gap: 1.5rem; }
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.search-form button {
+  padding: 0.85rem 1rem;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.primary-button,
+.search-form button {
+  background: linear-gradient(135deg, #4d74ff, #7a5cff);
+  color: white;
+  font-weight: 700;
+}
+
+.secondary-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+.ghost-button {
+  background: transparent;
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background: rgba(77, 116, 255, 0.2);
+  color: #bed0ff;
+}
+
+.muted {
+  color: rgba(245, 247, 255, 0.72);
+}
+
+.price-xl {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.page-state {
+  min-height: 50vh;
+  display: grid;
+  place-content: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.divider {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.thumbnail-button {
+  width: 88px;
+  height: 88px;
+  overflow: hidden;
+  background: transparent;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.success-text {
+  color: #8df0b0;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .navbar,
+  .product-layout,
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+  font: inherit;
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.error-text {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.success-text {
+  color: #027a48;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
