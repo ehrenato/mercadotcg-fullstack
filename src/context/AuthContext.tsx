@@ -9,9 +9,9 @@ import {
 import {
   clearAuthSession,
   getAuthSession,
-  login as loginRequest,
+  login as apiLogin,
   me,
-  register as registerRequest,
+  register as apiRegister,
   type User,
 } from "../services/api";
 
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function refreshUser() {
+  async function refreshUser(): Promise<void> {
     const session = getAuthSession();
 
     if (!session.token) {
@@ -64,14 +64,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     void bootstrapAuth();
   }, []);
 
-  async function handleLogin(email: string, password: string) {
-    const response = await loginRequest({ email, password });
+  async function handleLogin(email: string, password: string): Promise<void> {
+    const response = await apiLogin({ email, password });
     localStorage.setItem("token", response.token);
     setUser(response.user);
   }
 
-  async function handleRegister(name: string, email: string, password: string) {
-    const response = await registerRequest({ name, email, password });
+  async function handleRegister(
+    name: string,
+    email: string,
+    password: string
+  ): Promise<void> {
+    const response = await apiRegister({ name, email, password });
     localStorage.setItem("token", response.token);
     setUser(response.user);
   }
@@ -85,7 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     () => ({
       user,
       loading,
-      isAuthenticated: !!user,
+      isAuthenticated: Boolean(user),
       login: handleLogin,
       register: handleRegister,
       logout: handleLogout,

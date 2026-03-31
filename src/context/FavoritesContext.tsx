@@ -19,9 +19,7 @@ type FavoritesContextValue = {
 
 const FAVORITES_STORAGE_KEY = "mercadotcg_favorites";
 
-const FavoritesContext = createContext<FavoritesContextValue | undefined>(
-  undefined
-);
+const FavoritesContext = createContext<FavoritesContextValue | undefined>(undefined);
 
 type FavoritesProviderProps = {
   children: ReactNode;

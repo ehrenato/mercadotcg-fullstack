@@ -43,7 +43,9 @@ export default function ProductPage() {
         const data = await getProductById(id);
         setProduct(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro ao carregar produto.");
+        setError(
+          err instanceof Error ? err.message : "Erro ao carregar produto."
+        );
       } finally {
         setLoading(false);
       }
@@ -79,12 +81,12 @@ export default function ProductPage() {
   }
 
   if (loading) {
-    return <div className="product-page-status">Carregando produto...</div>;
+    return <div className="product-page-loading">Carregando produto...</div>;
   }
 
   if (error) {
     return (
-      <section className="product-page-status">
+      <section className="product-page-state">
         <h2>Não foi possível carregar o produto</h2>
         <p>{error}</p>
         <Link to="/">Voltar para a Home</Link>
@@ -94,7 +96,7 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <section className="product-page-status">
+      <section className="product-page-state">
         <h2>Produto não encontrado</h2>
         <p>O anúncio solicitado não existe ou foi removido.</p>
         <Link to="/">Voltar para a Home</Link>
@@ -104,61 +106,71 @@ export default function ProductPage() {
 
   return (
     <section className="product-page">
-      <nav className="product-page__breadcrumb">
-        <Link to="/">Home</Link> / {product.category} / {product.title}
-      </nav>
+      <div className="product-page-breadcrumb">
+        <Link to="/">Home</Link>
+        <span>/</span>
+        <span>{product.category}</span>
+        <span>/</span>
+        <strong>{product.title}</strong>
+      </div>
 
-      {feedback ? <div className="product-page__feedback">{feedback}</div> : null}
+      {feedback ? <div className="product-feedback">{feedback}</div> : null}
 
-      <div className="product-page__content">
-        <div className="product-page__gallery">
+      <div className="product-page-grid">
+        <div className="product-page-gallery">
           <img
             src={getImageSrc(product.image_url)}
             alt={product.title}
-            className="product-page__main-image"
+            className="product-main-image"
           />
         </div>
 
-        <div className="product-page__info">
-          <span className="product-page__category">{product.category}</span>
+        <div className="product-page-info">
+          <span className="product-page-category">{product.category}</span>
           <h1>{product.title}</h1>
 
-          <p className="product-page__seller">
+          <p className="product-page-seller">
             Vendido por {product.seller_name || "Vendedor da plataforma"}
           </p>
 
-          <strong className="product-page__price">
+          <strong className="product-page-price">
             R$ {Number(product.price).toFixed(2)}
           </strong>
 
-          <div className="product-page__actions">
-            <button type="button" onClick={handleAddToCart}>
+          <div className="product-page-actions">
+            <button type="button" className="btn-primary" onClick={handleAddToCart}>
               Adicionar ao carrinho
             </button>
 
-            <button type="button" onClick={handleToggleFavorite}>
-              {isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleToggleFavorite}
+            >
+              {isFavorite
+                ? "Remover dos favoritos"
+                : "Adicionar aos favoritos"}
             </button>
 
-            <button type="button" onClick={() => navigate("/carrinho")}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => navigate("/carrinho")}
+            >
               Ir para o carrinho
             </button>
           </div>
 
-          <ul className="product-page__details">
-            <li>
-              <strong>Idioma:</strong> {product.idioma}
-            </li>
-            <li>
-              <strong>Qualidade:</strong> {product.qualidade}
-            </li>
+          <ul className="product-page-details">
+            <li>Idioma: {product.idioma}</li>
+            <li>Qualidade: {product.qualidade}</li>
           </ul>
 
           {product.extras ? (
-            <>
+            <div className="product-page-extras">
               <h3>Extras</h3>
-              <p className="product-page__extras">{product.extras}</p>
-            </>
+              <p>{product.extras}</p>
+            </div>
           ) : null}
         </div>
       </div>

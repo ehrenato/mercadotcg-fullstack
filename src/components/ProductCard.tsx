@@ -26,56 +26,52 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="product-card">
-      <div className="product-card__favorite">
-        <FavoriteButton product={product} />
-      </div>
-
-      <Link to={`/produto/${product.id}`} className="product-card__image-link">
+      <div className="product-card-image-wrapper">
         <img
           src={getImageSrc(product.image_url)}
           alt={product.title}
-          className="product-card__image"
+          className="product-card-image"
         />
-      </Link>
+        <FavoriteButton product={product} />
+      </div>
 
-      <div className="product-card__content">
-        <span className="product-card__badge">{product.category}</span>
+      <div className="product-card-body">
+        <span className="product-card-category">{product.category}</span>
 
-        <h3 className="product-card__title">{product.title}</h3>
+        <h3 className="product-card-title">{product.title}</h3>
 
-        <div className="product-card__meta">
-          <span>
-            <strong>Idioma:</strong> {product.idioma}
-          </span>
-          <span>
-            <strong>Qualidade:</strong> {product.qualidade}
-          </span>
-        </div>
+        <p className="product-card-meta">
+          {product.idioma} • {product.qualidade}
+        </p>
 
         {product.extras ? (
-          <p className="product-card__extras">{product.extras}</p>
+          <p className="product-card-extras">{product.extras}</p>
         ) : null}
 
-        <strong className="product-card__price">
-          R$ {Number(product.price).toFixed(2)}
-        </strong>
+        <div className="product-card-footer">
+          <div>
+            <strong className="product-card-price">
+              R$ {Number(product.price).toFixed(2)}
+            </strong>
 
-        {product.seller_name ? (
-          <p className="product-card__seller">por {product.seller_name}</p>
-        ) : null}
+            {product.seller_name ? (
+              <p className="product-card-seller">por {product.seller_name}</p>
+            ) : null}
+          </div>
 
-        <div className="product-card__actions">
-          <Link to={`/produto/${product.id}`} className="product-card__link">
-            Ver produto
-          </Link>
+          <div className="product-card-actions">
+            <Link to={`/produto/${product.id}`} className="btn-secondary">
+              Ver produto
+            </Link>
 
-          <button
-            type="button"
-            className="product-card__cart-button"
-            onClick={() => addToCart(product)}
-          >
-            Adicionar
-          </button>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => addToCart(product)}
+            >
+              Carrinho
+            </button>
+          </div>
         </div>
       </div>
     </article>

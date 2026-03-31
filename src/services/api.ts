@@ -125,7 +125,7 @@ export async function getProducts(params?: {
   search?: string;
   category?: string;
   sellerId?: number;
-}) {
+}): Promise<Product[]> {
   const query = new URLSearchParams();
 
   if (params?.search) {
@@ -136,7 +136,7 @@ export async function getProducts(params?: {
     query.set("category", params.category);
   }
 
-  if (params?.sellerId) {
+  if (typeof params?.sellerId === "number") {
     query.set("sellerId", String(params.sellerId));
   }
 
@@ -152,7 +152,7 @@ export async function getProducts(params?: {
   return handleResponse<Product[]>(response);
 }
 
-export async function getProductById(id: number | string) {
+export async function getProductById(id: number | string): Promise<Product> {
   const response = await fetch(`${API_BASE_URL}/products/${id}`, {
     method: "GET",
   });
@@ -160,7 +160,7 @@ export async function getProductById(id: number | string) {
   return handleResponse<Product>(response);
 }
 
-export async function getMyProducts() {
+export async function getMyProducts(): Promise<Product[]> {
   const response = await fetch(`${API_BASE_URL}/products/mine`, {
     method: "GET",
     headers: getAuthHeaders(),
@@ -169,7 +169,7 @@ export async function getMyProducts() {
   return handleResponse<Product[]>(response);
 }
 
-export async function createProduct(formData: FormData) {
+export async function createProduct(formData: FormData): Promise<Product> {
   const response = await fetch(`${API_BASE_URL}/products`, {
     method: "POST",
     headers: getAuthHeaders(true),
@@ -179,7 +179,10 @@ export async function createProduct(formData: FormData) {
   return handleResponse<Product>(response);
 }
 
-export async function updateProduct(id: number, formData: FormData) {
+export async function updateProduct(
+  id: number,
+  formData: FormData
+): Promise<Product> {
   const response = await fetch(`${API_BASE_URL}/products/${id}`, {
     method: "PUT",
     headers: getAuthHeaders(true),
@@ -200,6 +203,7 @@ export async function deleteProduct(id: number) {
 
 export async function getOrders(): Promise<Order[]> {
   const response = await fetch(`${API_BASE_URL}/orders`, {
+    method: "GET",
     headers: getAuthHeaders(),
   });
 

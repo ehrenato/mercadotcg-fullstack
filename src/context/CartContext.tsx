@@ -75,9 +75,7 @@ export function CartProvider({ children }: CartProviderProps) {
   function increaseQuantity(productId: number) {
     setCartItems((prev) =>
       prev.map((item) =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   }
@@ -113,11 +111,7 @@ export function CartProvider({ children }: CartProviderProps) {
   );
 
   const totalPrice = useMemo(
-    () =>
-      cartItems.reduce(
-        (acc, item) => acc + Number(item.price) * item.quantity,
-        0
-      ),
+    () => cartItems.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0),
     [cartItems]
   );
 

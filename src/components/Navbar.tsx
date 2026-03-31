@@ -9,12 +9,12 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <div className="navbar__container">
-        <Link to="/" className="navbar__brand">
+      <div className="navbar-container">
+        <Link to="/" className="navbar-logo">
           MercadoTCG
         </Link>
 
-        <nav className="navbar__nav">
+        <nav className="navbar-links">
           <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
             Home
           </NavLink>
@@ -28,7 +28,7 @@ export default function Navbar() {
 
           {isAuthenticated && (
             <NavLink
-              to="/anunciar"
+              to="/upload"
               className={({ isActive }) => (isActive ? "active" : "")}
             >
               Anunciar
@@ -61,16 +61,18 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        <div className="navbar__auth">
+        <div className="navbar-auth">
           {isAuthenticated ? (
             <>
-              <span>Olá, {user?.name}</span>
-              <button type="button" onClick={logout}>
+              <span className="navbar-user">Olá, {user?.name}</span>
+              <button type="button" className="navbar-button" onClick={logout}>
                 Sair
               </button>
             </>
           ) : (
-            <Link to="/auth">Entrar</Link>
+            <Link to="/auth" className="navbar-button">
+              Entrar
+            </Link>
           )}
         </div>
       </div>

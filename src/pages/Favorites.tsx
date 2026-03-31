@@ -7,15 +7,17 @@ export default function Favorites() {
 
   return (
     <section className="favorites-page">
-      <header className="favorites-page__header">
+      <header className="favorites-header">
         <h1>Favoritos</h1>
         <p>Seus produtos salvos aparecem aqui.</p>
       </header>
 
       {favorites.length === 0 ? (
-        <div className="favorites-page__empty">
+        <div className="favorites-empty">
           <p>Nenhum favorito ainda.</p>
-          <Link to="/">Explorar produtos</Link>
+          <Link to="/" className="btn-primary">
+            Explorar produtos
+          </Link>
         </div>
       ) : (
         <div className="products-grid">
