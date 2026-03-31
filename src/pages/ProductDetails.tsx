@@ -47,7 +47,8 @@ export default function ProductDetails() {
           <span>{product.category}</span>
           <h1>{product.title}</h1>
           <p>R$ {Number(product.price).toFixed(2)}</p>
-          <p>{product.description}</p>
+          <p>{product.idioma}</p>
+          <p>{product.qualidade}</p>
           <p>Vendedor: {product.seller_name ?? "Loja oficial"}</p>
 
           <div style={{ display: "flex", gap: 12, marginTop: 16 }}>

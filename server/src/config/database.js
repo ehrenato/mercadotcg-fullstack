@@ -65,9 +65,11 @@ export async function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
-      description TEXT NOT NULL,
       price REAL NOT NULL,
       category TEXT NOT NULL,
+      idioma TEXT NOT NULL,
+      qualidade TEXT NOT NULL,
+      extras TEXT NOT NULL,
       image_url TEXT,
       user_id INTEGER NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -146,14 +148,16 @@ async function seedProducts() {
   for (const product of products) {
     await run(
       `
-        INSERT INTO products (title, description, price, category, image_url, user_id)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO products (title, price, category, idioma, qualidade, extras, image_url, user_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `,
       [
         product.title,
-        product.description,
         product.price,
         product.category,
+        product.idioma,
+        product.qualidade,
+        product.extras,
         product.image_url,
         demoUser.id
       ]

@@ -9,9 +9,10 @@ import "../styles/MyProducts.css";
 
 type EditFormState = {
   title: string;
-  description: string;
   price: string;
   category: string;
+  idioma: string;
+  qualidade: string;
   image: File | null;
 };
 
@@ -40,9 +41,10 @@ export default function MyProducts() {
 
   const [form, setForm] = useState<EditFormState>({
     title: "",
-    description: "",
     price: "",
-    category: "Pokémon",
+    category: "",
+    idioma: "",
+    qualidade: "",
     image: null,
   });
 
@@ -76,9 +78,10 @@ export default function MyProducts() {
     setEditingProductId(product.id);
     setForm({
       title: product.title,
-      description: product.description,
       price: String(product.price),
       category: product.category,
+      idioma: product.idioma,
+      qualidade: product.qualidade,
       image: null,
     });
   }
@@ -87,9 +90,10 @@ export default function MyProducts() {
     setEditingProductId(null);
     setForm({
       title: "",
-      description: "",
       price: "",
-      category: "Pokémon",
+      category: "",
+      idioma: "",
+      qualidade "",
       image: null,
     });
   }
@@ -130,9 +134,10 @@ export default function MyProducts() {
 
       const formData = new FormData();
       formData.append("title", form.title);
-      formData.append("description", form.description);
       formData.append("price", form.price);
       formData.append("category", form.category);
+      formData.append("idioma", form.idioma);
+      formData.append("qualidade", form.qualidade);
 
       if (form.image) {
         formData.append("image", form.image);
@@ -191,7 +196,6 @@ export default function MyProducts() {
               <div className="my-product-card__body">
                 <span className="my-product-card__badge">{product.category}</span>
                 <h3>{product.title}</h3>
-                <p>{product.description}</p>
                 <strong>R$ {Number(product.price).toFixed(2)}</strong>
               </div>
 
@@ -281,6 +285,30 @@ export default function MyProducts() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="my-products-form__field">
+                <label htmlFor="description">Idioma</label>
+                <textarea
+                  id="idioma"
+                  value={form.idioma}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, idioma: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="my-products-form__field">
+                <label htmlFor="qualidade">Qualidade</label>
+                <textarea
+                  id="description"
+                  value={form.qualidade}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, qualidade: e.target.value }))
+                  }
+                  required
+                />
               </div>
 
               <div className="my-products-form__field">

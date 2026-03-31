@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { getProducts, type Product } from "../services/api";
 import "../styles/home.css";
 
-const categories = ["Todos", "Pokémon", "Treinador", "Energia", "Acessórios"];
+const categories = ["Todos", "Pokémon", "Magic"];
 const API_ORIGIN = "http://localhost:3001";
 
 function getImageSrc(imageUrl?: string | null) {
@@ -62,7 +62,7 @@ export default function Home() {
   return (
     <section className="home-page">
       <div className="home-hero">
-        <span className="home-badge">Marketplace de cartas Pokémon</span>
+        <span className="home-badge">Marketplace de cartas TCG</span>
         <h1>Encontre cartas raras, itens colecionáveis e acessórios.</h1>
         <p>
           Explore anúncios da comunidade, filtre por categoria e encontre as
@@ -144,13 +144,13 @@ export default function Home() {
                   <h3>{product.title}</h3>
                 </Link>
 
-                <p className="product-description">{product.description}</p>
+                <p className="product-qualidade">{product.qualidade}</p>
 
                 <div className="product-meta">
                   <strong>R$ {Number(product.price).toFixed(2)}</strong>
                   {product.seller_name && (
                     <span className="product-seller">
-                      por {product.seller_name}
+                      Vendido por: {product.seller_name}
                     </span>
                   )}
                 </div>

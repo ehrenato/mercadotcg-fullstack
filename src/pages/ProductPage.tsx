@@ -168,8 +168,12 @@ export default function ProductPage() {
       </div>
 
       <div className="product-description-card">
-        <h3>Descrição</h3>
-        <p>{product.description}</p>
+        <h3>Idioma</h3>
+        <p>{product.idioma}</p>
+      </div>
+      <div className="product-description-card">
+        <h3>Qualidade</h3>
+        <p>{product.qualidade}</p>
       </div>
     </section>
   );

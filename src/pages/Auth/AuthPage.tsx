@@ -47,7 +47,7 @@ export default function AuthPage() {
     <section className="auth-page">
       <div className="auth-page__hero">
         <span className="auth-page__badge">MercadoTCG</span>
-        <h1>Compre, venda e gerencie suas cartas com uma experiência moderna.</h1>
+        <h1>Compre, venda e gerencie suas cartas.</h1>
         <p>
           Entre na sua conta para anunciar produtos, acompanhar pedidos e
           administrar seus anúncios em um só lugar.

@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h3>{product.title}</h3>
         </Link>
 
-        <p className="product-description">{product.description}</p>
+        <p className="product-qualidade">{product.qualidade}</p>
 
         <div className="product-meta">
           <strong>R$ {Number(product.price).toFixed(2)}</strong>

@@ -54,7 +54,7 @@ export default function Orders() {
     <section className="orders-page">
       <div className="orders-page__header">
         <h1>Meus pedidos</h1>
-        <p>Pedidos reais vindos do backend.</p>
+        <p>Confira aqui seus pedidos.</p>
       </div>
 
       {error ? <div className="orders-alert">{error}</div> : null}

@@ -55,9 +55,9 @@ export default function Favorites() {
               </Link>
 
               <div className="favorite-card__body">
-                <span className="favorite-card__badge">{product.category}</span>
+                <span className="favorite-card__badge">{product.qualidade}</span>
                 <h3>{product.title}</h3>
-                <p>{product.description}</p>
+                <p>{product.idioma}</p>
 
                 <div className="favorite-card__footer">
                   <strong>R$ {Number(product.price).toFixed(2)}</strong>

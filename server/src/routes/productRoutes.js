@@ -23,9 +23,11 @@ router.get("/", (req, res) => {
     SELECT 
       p.id,
       p.title,
-      p.description,
       p.price,
       p.category,
+      p.idioma,
+      p.qualidade,
+      p.extras,
       p.image_url,
       p.user_id,
       p.created_at,
@@ -73,9 +75,11 @@ router.get("/mine", requireAuth, (req, res) => {
     SELECT 
       p.id,
       p.title,
-      p.description,
       p.price,
       p.category,
+      p.idioma,
+      p.qualidade,
+      p.extras,
       p.image_url,
       p.user_id,
       p.created_at
@@ -103,9 +107,11 @@ router.get("/:id", (req, res) => {
     SELECT 
       p.id,
       p.title,
-      p.description,
       p.price,
       p.category,
+      p.idioma,
+      p.qualidade,
+      p.extras,
       p.image_url,
       p.user_id,
       p.created_at,
@@ -132,11 +138,11 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", requireAuth, upload.single("image"), (req, res) => {
-  const { title, description, price, category } = req.body;
+  const { title, price, idioma, qualidade } = req.body;
 
-  if (!title || !description || !price || !category) {
+  if (!title || !price || !category || !idioma|| !qualidade) {
     return res.status(400).json({
-      message: "Título, descrição, preço e categoria são obrigatórios."
+      message: "Título, preço, categoria, idioma e qualidade são obrigatórios."
     });
   }
 
@@ -145,13 +151,13 @@ router.post("/", requireAuth, upload.single("image"), (req, res) => {
     : null;
 
   const sql = `
-    INSERT INTO products (title, description, price, category, image_url, user_id)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO products (title, price, category, idioma, qualidade, image_url, user_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.run(
     sql,
-    [title, description, Number(price), category, imageUrl, req.user.id],
+    [title, Number(price), category, idioma, qualidade, imageUrl, req.user.id],
     function (err) {
       if (err) {
         return res.status(500).json({ message: "Erro ao criar anúncio." });
@@ -160,9 +166,10 @@ router.post("/", requireAuth, upload.single("image"), (req, res) => {
       res.status(201).json({
         id: this.lastID,
         title,
-        description,
         price: Number(price),
         category,
+        idioma,
+        qualidade,
         image_url: normalizeImagePath(imageUrl),
         user_id: req.user.id
       });
@@ -171,7 +178,7 @@ router.post("/", requireAuth, upload.single("image"), (req, res) => {
 });
 
 router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
-  const { title, description, price, category } = req.body;
+  const { title, price, category, idioma, qualidade } = req.body;
   const productId = Number(req.params.id);
 
   db.get(`SELECT * FROM products WHERE id = ?`, [productId], (findErr, product) => {
@@ -188,9 +195,10 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
     }
 
     const nextTitle = title ?? product.title;
-    const nextDescription = description ?? product.description;
     const nextPrice = price ?? product.price;
     const nextCategory = category ?? product.category;
+    const nextIdioma = idioma ?? product.idioma;
+    const nextQualidade = qualidade ?? product.qualidade;
 
     let nextImageUrl = product.image_url;
 
@@ -215,13 +223,13 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
 
     const sql = `
       UPDATE products
-      SET title = ?, description = ?, price = ?, category = ?, image_url = ?
+      SET title = ?, price = ?, category = ?, idioma = ?, qualidaed = ?, image_url = ?
       WHERE id = ?
     `;
 
     db.run(
       sql,
-      [nextTitle, nextDescription, Number(nextPrice), nextCategory, nextImageUrl, productId],
+      [nextTitle, Number(nextPrice), nextCategory, nextIdioma, nextQualidade, nextImageUrl, productId],
       function (updateErr) {
         if (updateErr) {
           return res.status(500).json({ message: "Erro ao atualizar anúncio." });
@@ -230,9 +238,10 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
         res.json({
           id: productId,
           title: nextTitle,
-          description: nextDescription,
           price: Number(nextPrice),
           category: nextCategory,
+          idioma: nextIdioma,
+          qualidade: nextQualidade,
           image_url: normalizeImagePath(nextImageUrl),
           user_id: req.user.id
         });

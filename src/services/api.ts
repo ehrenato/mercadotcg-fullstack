@@ -10,9 +10,10 @@ export type User = {
 export type Product = {
   id: number;
   title: string;
-  description: string;
   price: number;
   category: string;
+  idioma: string;
+  qualidade: string;
   image_url: string | null;
   user_id: number;
   seller_name?: string;

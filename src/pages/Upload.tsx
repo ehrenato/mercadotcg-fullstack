@@ -3,17 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { createProduct } from "../services/api";
 import "../styles/Upload.css";
 
-const categories = ["Pokémon", "Treinador", "Energia", "Acessórios"];
-const conditions = ["Excelente", "Muito boa", "Boa", "Regular"];
+const categories = ["Pokémon", "Magic"];
+const idiomas = ["Português", "Inglês", "Japonês"];
+const qualidades = ["(M)Nova", "(NM) Praticamente nova ou superior", "(SP)Usada levemente ou superior", "(MP)Usada moderadamento ou superior", "(HP)Muito usada ou superior", "(D)Danificada ou superior"];
 
 export default function Upload() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("Pokémon");
-  const [description, setDescription] = useState("");
-  const [condition, setCondition] = useState("Excelente");
+  const [category, setCategory] = useState("");
+  const [idioma, setIdioma] = useState("");
+  const [qualidade, setQualidade] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -30,7 +31,8 @@ export default function Upload() {
       formData.append("title", title);
       formData.append("price", price);
       formData.append("category", category);
-      formData.append("description", `${description}\n\nCondição do item: ${condition}`);
+      formData.append("idioma", `${idioma}\n\nIdioma do item: ${idioma}`);
+      formData.append("qualidade", `${qualidade}\n\nQualidade do item: ${qualidade}`);
 
       if (image) {
         formData.append("image", image);
@@ -41,9 +43,9 @@ export default function Upload() {
       setSuccess("Anúncio publicado com sucesso!");
       setTitle("");
       setPrice("");
-      setCategory("Pokémon");
-      setDescription("");
-      setCondition("Excelente");
+      setCategory("");
+      setIdioma("");
+      setQualidade("");
       setImage(null);
 
       setTimeout(() => {
@@ -61,6 +63,7 @@ export default function Upload() {
       <div className="upload-card">
         <h1>Criar anúncio</h1>
         <p>Preencha os dados do produto e publique seu anúncio no marketplace.</p>
+        <p>*Ao digitar o nome da carta, também coloque o número para facilitar a busca.</p> 
 
         {success && <div className="upload-success">{success}</div>}
         {error && <div className="upload-error">{error}</div>}
@@ -68,13 +71,10 @@ export default function Upload() {
         <form onSubmit={handleSubmit} className="upload-form">
           <label>
             Título
-            <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <input placeholder="Ex: Toxtricity-V (70/192)" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            
           </label>
 
-          <label>
-            Número da carta
-            <input></input>
-          </label>
 
           <label>
             Preço
@@ -100,9 +100,9 @@ export default function Upload() {
           </label>
 
           <label>
-            Condição
-            <select value={condition} onChange={(e) => setCondition(e.target.value)}>
-              {conditions.map((item) => (
+            Idioma
+            <select value={idioma} onChange={(e) => setIdioma(e.target.value)}>
+              {idiomas.map((item) => (
                 <option key={item} value={item}>
                   {item}
                 </option>
@@ -111,10 +111,10 @@ export default function Upload() {
           </label>
 
           <label>
-            Descrição
+            Qualidade
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={qualidade}
+              onChange={(e) => setQualidade(e.target.value)}
               required
             />
           </label>
