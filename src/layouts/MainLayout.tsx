@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Home from "../pages/Home";
@@ -17,22 +17,14 @@ export default function MainLayout() {
     <div className="main-layout">
       <Navbar />
 
-      <main className="main-layout-content">
+      <main className="main-layout__content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/produto/:id" element={<ProductPage />} />
           <Route path="/favoritos" element={<Favorites />} />
           <Route path="/carrinho" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/auth" element={<AuthPage />} />
-
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            }
-          />
 
           <Route
             path="/anunciar"

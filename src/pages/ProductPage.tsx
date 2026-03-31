@@ -79,101 +79,88 @@ export default function ProductPage() {
   }
 
   if (loading) {
-    return (
-      <section className="product-page-state">
-        <p>Carregando produto...</p>
-      </section>
-    );
+    return <div className="product-page-status">Carregando produto...</div>;
   }
 
   if (error) {
     return (
-      <section className="product-page-state">
+      <section className="product-page-status">
         <h2>Não foi possível carregar o produto</h2>
         <p>{error}</p>
-        <Link to="/" className="primary-button">
-          Voltar para a Home
-        </Link>
+        <Link to="/">Voltar para a Home</Link>
       </section>
     );
   }
 
   if (!product) {
     return (
-      <section className="product-page-state">
+      <section className="product-page-status">
         <h2>Produto não encontrado</h2>
         <p>O anúncio solicitado não existe ou foi removido.</p>
-        <Link to="/" className="primary-button">
-          Voltar para a Home
-        </Link>
+        <Link to="/">Voltar para a Home</Link>
       </section>
     );
   }
 
   return (
     <section className="product-page">
-      <div className="product-breadcrumb">
-        <Link to="/">Home</Link>
-        <span>/</span>
-        <span>{product.category}</span>
-        <span>/</span>
-        <strong>{product.title}</strong>
-      </div>
+      <nav className="product-page__breadcrumb">
+        <Link to="/">Home</Link> / {product.category} / {product.title}
+      </nav>
 
-      {feedback && <div className="product-feedback">{feedback}</div>}
+      {feedback ? <div className="product-page__feedback">{feedback}</div> : null}
 
-      <div className="product-page__grid">
-        <div className="product-gallery-card">
+      <div className="product-page__content">
+        <div className="product-page__gallery">
           <img
-            className="product-gallery-card__image"
             src={getImageSrc(product.image_url)}
             alt={product.title}
+            className="product-page__main-image"
           />
         </div>
 
-        <aside className="product-info-card">
-          <span className="product-info-card__badge">{product.category}</span>
-
+        <div className="product-page__info">
+          <span className="product-page__category">{product.category}</span>
           <h1>{product.title}</h1>
 
-          <p className="product-info-card__seller">
+          <p className="product-page__seller">
             Vendido por {product.seller_name || "Vendedor da plataforma"}
           </p>
 
-          <div className="product-info-card__price">
+          <strong className="product-page__price">
             R$ {Number(product.price).toFixed(2)}
-          </div>
+          </strong>
 
-          <p className="product-info-card__installments">
-            em até 12x no cartão
-          </p>
-
-          <div className="product-info-card__actions">
-            <button className="primary-button" onClick={handleAddToCart}>
+          <div className="product-page__actions">
+            <button type="button" onClick={handleAddToCart}>
               Adicionar ao carrinho
             </button>
 
-            <button className="secondary-button" onClick={handleToggleFavorite}>
+            <button type="button" onClick={handleToggleFavorite}>
               {isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             </button>
 
-            <button
-              className="ghost-button"
-              onClick={() => navigate("/carrinho")}
-            >
+            <button type="button" onClick={() => navigate("/carrinho")}>
               Ir para o carrinho
             </button>
           </div>
-        </aside>
-      </div>
 
-      <div className="product-description-card">
-        <h3>Idioma</h3>
-        <p>{product.idioma}</p>
-      </div>
-      <div className="product-description-card">
-        <h3>Qualidade</h3>
-        <p>{product.qualidade}</p>
+          <ul className="product-page__details">
+            <li>
+              <strong>Idioma:</strong> {product.idioma}
+            </li>
+            <li>
+              <strong>Qualidade:</strong> {product.qualidade}
+            </li>
+          </ul>
+
+          {product.extras ? (
+            <>
+              <h3>Extras</h3>
+              <p className="product-page__extras">{product.extras}</p>
+            </>
+          ) : null}
+        </div>
       </div>
     </section>
   );

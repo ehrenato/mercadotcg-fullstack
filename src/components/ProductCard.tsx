@@ -26,47 +26,56 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="product-card">
-      <Link to={`/produto/${product.id}`} className="product-card-image-link">
+      <div className="product-card__favorite">
+        <FavoriteButton product={product} />
+      </div>
+
+      <Link to={`/produto/${product.id}`} className="product-card__image-link">
         <img
           src={getImageSrc(product.image_url)}
           alt={product.title}
-          className="product-card-image"
+          className="product-card__image"
         />
       </Link>
 
-      <div className="product-card-body">
-        <span className="product-category">{product.category}</span>
+      <div className="product-card__content">
+        <span className="product-card__badge">{product.category}</span>
 
-        <Link to={`/produto/${product.id}`} className="product-title-link">
-          <h3>{product.title}</h3>
-        </Link>
+        <h3 className="product-card__title">{product.title}</h3>
 
-        <p className="product-qualidade">{product.qualidade}</p>
-
-        <div className="product-meta">
-          <strong>R$ {Number(product.price).toFixed(2)}</strong>
-          {product.seller_name ? (
-            <span className="product-seller">por {product.seller_name}</span>
-          ) : null}
+        <div className="product-card__meta">
+          <span>
+            <strong>Idioma:</strong> {product.idioma}
+          </span>
+          <span>
+            <strong>Qualidade:</strong> {product.qualidade}
+          </span>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Link to={`/produto/${product.id}`} className="product-action">
+        {product.extras ? (
+          <p className="product-card__extras">{product.extras}</p>
+        ) : null}
+
+        <strong className="product-card__price">
+          R$ {Number(product.price).toFixed(2)}
+        </strong>
+
+        {product.seller_name ? (
+          <p className="product-card__seller">por {product.seller_name}</p>
+        ) : null}
+
+        <div className="product-card__actions">
+          <Link to={`/produto/${product.id}`} className="product-card__link">
             Ver produto
           </Link>
 
-          <button type="button" onClick={() => addToCart(product)}>
-            Carrinho
+          <button
+            type="button"
+            className="product-card__cart-button"
+            onClick={() => addToCart(product)}
+          >
+            Adicionar
           </button>
-
-          <FavoriteButton product={product} />
         </div>
       </div>
     </article>

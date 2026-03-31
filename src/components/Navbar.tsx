@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import "../styles/Navbar.css";
 
 export default function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -8,12 +9,12 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <div className="navbar-inner">
-        <Link to="/" className="navbar-brand">
+      <div className="navbar__container">
+        <Link to="/" className="navbar__brand">
           MercadoTCG
         </Link>
 
-        <nav className="navbar-links">
+        <nav className="navbar__nav">
           <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
             Home
           </NavLink>
@@ -60,19 +61,16 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        <div className="navbar-user">
+        <div className="navbar__auth">
           {isAuthenticated ? (
             <>
-              <span className="navbar-user-name">Olá, {user?.name}</span>
-
-              <button type="button" className="navbar-button" onClick={logout}>
+              <span>Olá, {user?.name}</span>
+              <button type="button" onClick={logout}>
                 Sair
               </button>
             </>
           ) : (
-            <Link to="/auth" className="navbar-button">
-              Entrar
-            </Link>
+            <Link to="/auth">Entrar</Link>
           )}
         </div>
       </div>

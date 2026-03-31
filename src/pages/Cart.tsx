@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { createOrder } from "../services/api";
-import "../styles/cart.css";
+import "../styles/Cart.css";
 
 export default function Cart() {
   const {
@@ -10,39 +8,18 @@ export default function Cart() {
     removeFromCart,
     increaseQuantity,
     decreaseQuantity,
-    clearCart,
     totalPrice,
+    clearCart,
   } = useCart();
 
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  async function handleCheckout() {
-    try {
-      setLoading(true);
-
-      const items = cartItems.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
-      }));
-
-      await createOrder({ items });
-      clearCart();
-      alert("Pedido realizado com sucesso!");
-      navigate("/pedidos");
-    } catch (error) {
-      alert(error instanceof Error ? error.message : "Erro ao finalizar compra.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   if (cartItems.length === 0) {
     return (
-      <section className="cart-page-state">
+      <section className="cart-page">
         <h2>Seu carrinho está vazio</h2>
         <p>Adicione produtos para continuar.</p>
-        <button className="primary-button" onClick={() => navigate("/")}>
+        <button type="button" onClick={() => navigate("/")}>
           Ir para produtos
         </button>
       </section>
@@ -51,62 +28,46 @@ export default function Cart() {
 
   return (
     <section className="cart-page">
-      <div className="cart-page__list">
-        <div className="cart-page__header">
-          <h2>Carrinho</h2>
-          <p>{cartItems.length} item(ns) no carrinho</p>
-        </div>
+      <h2>Carrinho</h2>
 
-        <div className="cart-items">
-          {cartItems.map((item) => (
-            <article key={item.id} className="cart-item-card">
-              <div className="cart-item-card__content">
-                <h3>{item.title}</h3>
-                <p className="cart-item-card__price">
-                  R$ {Number(item.price).toFixed(2)}
-                </p>
-              </div>
+      <div className="cart-list">
+        {cartItems.map((item) => (
+          <article key={item.id} className="cart-item">
+            <div>
+              <h3>{item.title}</h3>
+              <p>
+                {item.category} • {item.idioma} • {item.qualidade}
+              </p>
+            </div>
 
-              <div className="cart-item-card__actions">
-                <div className="cart-qty-control">
-                  <button onClick={() => decreaseQuantity(item.id)}>-</button>
-                  <span>{item.quantity}</span>
-                  <button onClick={() => increaseQuantity(item.id)}>+</button>
-                </div>
+            <div className="cart-item__quantity">
+              <button type="button" onClick={() => decreaseQuantity(item.id)}>
+                -
+              </button>
+              <span>{item.quantity}</span>
+              <button type="button" onClick={() => increaseQuantity(item.id)}>
+                +
+              </button>
+            </div>
 
-                <strong className="cart-item-card__subtotal">
-                  R$ {(item.quantity * Number(item.price)).toFixed(2)}
-                </strong>
+            <p>R$ {(item.quantity * Number(item.price)).toFixed(2)}</p>
 
-                <button
-                  className="ghost-button"
-                  onClick={() => removeFromCart(item.id)}
-                >
-                  Remover
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+            <button type="button" onClick={() => removeFromCart(item.id)}>
+              Remover
+            </button>
+          </article>
+        ))}
       </div>
 
-      <aside className="cart-summary-card">
+      <aside className="cart-summary">
         <h3>Resumo</h3>
+        <p>Total: R$ {totalPrice.toFixed(2)}</p>
 
-        <div className="cart-summary-row">
-          <span>Total</span>
-          <strong>R$ {totalPrice.toFixed(2)}</strong>
-        </div>
-
-        <button
-          className="primary-button cart-summary-button"
-          onClick={handleCheckout}
-          disabled={loading}
-        >
-          {loading ? "Finalizando..." : "Finalizar compra"}
+        <button type="button" onClick={() => navigate("/checkout")}>
+          Ir para checkout
         </button>
 
-        <button className="secondary-button cart-summary-button" onClick={clearCart}>
+        <button type="button" onClick={clearCart}>
           Limpar carrinho
         </button>
       </aside>

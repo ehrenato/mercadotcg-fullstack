@@ -13,8 +13,8 @@ export default function FavoriteButton({ product }: FavoriteButtonProps) {
     <button
       type="button"
       onClick={() => toggleFavorite(product)}
-      aria-label="Adicionar aos favoritos"
-      className="favorite-button"
+      aria-label={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+      title={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
     >
       {favorite ? "❤️" : "🤍"}
     </button>

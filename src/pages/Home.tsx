@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { getProducts, type Product } from "../services/api";
 import "../styles/home.css";
 
-const categories = ["Todos", "Pokémon", "Magic"];
+const categories = ["Todos", "Pokémon", "Treinador", "Energia", "Acessórios"];
 const API_ORIGIN = "http://localhost:3001";
 
 function getImageSrc(imageUrl?: string | null) {
@@ -32,12 +32,15 @@ export default function Home() {
 
       const data = await getProducts({
         search: search.trim() || undefined,
-        category: selectedCategory !== "Todos" ? selectedCategory : undefined,
+        category:
+          selectedCategory !== "Todos" ? selectedCategory : undefined,
       });
 
       setProducts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar produtos.");
+      setError(
+        err instanceof Error ? err.message : "Erro ao carregar produtos."
+      );
     } finally {
       setLoading(false);
     }
@@ -61,34 +64,34 @@ export default function Home() {
 
   return (
     <section className="home-page">
-      <div className="home-hero">
-        <span className="home-badge">Marketplace de cartas TCG</span>
-        <h1>Encontre cartas raras, itens colecionáveis e acessórios.</h1>
-        <p>
-          Explore anúncios da comunidade, filtre por categoria e encontre as
-          melhores oportunidades para sua coleção.
-        </p>
-      </div>
+      <header className="home-hero">
+        <div className="home-hero__content">
+          <span className="home-hero__badge">Marketplace de cartas Pokémon</span>
+          <h1>Encontre cartas raras, itens colecionáveis e acessórios.</h1>
+          <p>
+            Explore anúncios da comunidade, filtre por categoria e encontre as
+            melhores oportunidades para sua coleção.
+          </p>
 
-      <div className="home-toolbar">
-        <form className="home-search" onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            placeholder="Buscar por título..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button type="submit">Buscar</button>
-        </form>
+          <form className="home-search" onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome da carta..."
+            />
+            <button type="submit">Buscar</button>
+          </form>
+        </div>
+      </header>
 
-        <div className="home-filters">
+      <section className="home-toolbar">
+        <div className="home-categories">
           {categories.map((category) => (
             <button
               key={category}
               type="button"
-              className={`filter-chip ${
-                selectedCategory === category ? "active" : ""
-              }`}
+              className={selectedCategory === category ? "active" : ""}
               onClick={() => setSelectedCategory(category)}
             >
               {category}
@@ -96,22 +99,19 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="home-results-header">{totalProductsLabel}</div>
-      </div>
+        <p className="home-results-label">{totalProductsLabel}</p>
+      </section>
 
-      {error && <div className="home-alert error">{error}</div>}
+      {error ? <div className="home-error">{error}</div> : null}
 
       {loading ? (
-        <div className="home-grid">
+        <div className="products-grid">
           {Array.from({ length: 8 }).map((_, index) => (
             <article key={index} className="product-card skeleton-card">
               <div className="skeleton skeleton-image" />
-              <div className="product-card-body">
-                <div className="skeleton skeleton-line short" />
-                <div className="skeleton skeleton-line" />
-                <div className="skeleton skeleton-line" />
-                <div className="skeleton skeleton-line short" />
-              </div>
+              <div className="skeleton skeleton-text" />
+              <div className="skeleton skeleton-text short" />
+              <div className="skeleton skeleton-text medium" />
             </article>
           ))}
         </div>
@@ -120,42 +120,43 @@ export default function Home() {
           Nenhum produto foi encontrado com os filtros atuais.
         </div>
       ) : (
-        <div className="home-grid">
+        <div className="products-grid">
           {products.map((product) => (
             <article key={product.id} className="product-card">
-              <Link
-                to={`/produto/${product.id}`}
-                className="product-card-image-link"
-              >
+              <Link to={`/produto/${product.id}`} className="product-card__image-link">
                 <img
                   src={getImageSrc(product.image_url)}
                   alt={product.title}
-                  className="product-card-image"
+                  className="product-card__image"
                 />
               </Link>
 
-              <div className="product-card-body">
-                <span className="product-category">{product.category}</span>
+              <div className="product-card__content">
+                <span className="product-card__badge">{product.category}</span>
+                <h3>{product.title}</h3>
 
-                <Link
-                  to={`/produto/${product.id}`}
-                  className="product-title-link"
-                >
-                  <h3>{product.title}</h3>
-                </Link>
-
-                <p className="product-qualidade">{product.qualidade}</p>
-
-                <div className="product-meta">
-                  <strong>R$ {Number(product.price).toFixed(2)}</strong>
-                  {product.seller_name && (
-                    <span className="product-seller">
-                      Vendido por: {product.seller_name}
-                    </span>
-                  )}
+                <div className="product-card__meta">
+                  <span>
+                    <strong>Idioma:</strong> {product.idioma}
+                  </span>
+                  <span>
+                    <strong>Qualidade:</strong> {product.qualidade}
+                  </span>
                 </div>
 
-                <Link to={`/produto/${product.id}`} className="product-action">
+                {product.extras ? (
+                  <p className="product-card__extras">{product.extras}</p>
+                ) : null}
+
+                <strong className="product-card__price">
+                  R$ {Number(product.price).toFixed(2)}
+                </strong>
+
+                {product.seller_name ? (
+                  <p className="product-card__seller">por {product.seller_name}</p>
+                ) : null}
+
+                <Link to={`/produto/${product.id}`} className="product-card__link">
                   Ver detalhes
                 </Link>
               </div>

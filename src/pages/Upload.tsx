@@ -3,36 +3,40 @@ import { useNavigate } from "react-router-dom";
 import { createProduct } from "../services/api";
 import "../styles/Upload.css";
 
-const categories = ["Pokémon", "Magic"];
-const idiomas = ["Português", "Inglês", "Japonês"];
-const qualidades = ["(M)Nova", "(NM) Praticamente nova ou superior", "(SP)Usada levemente ou superior", "(MP)Usada moderadamento ou superior", "(HP)Muito usada ou superior", "(D)Danificada ou superior"];
+const categories = ["Pokémon", "Treinador", "Energia", "Acessórios"];
+const idiomas = ["Português", "Inglês", "Japonês", "Espanhol", "Outro"];
+const qualidades = ["Nova", "Excelente", "Muito boa", "Boa", "Regular"];
 
 export default function Upload() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
-  const [idioma, setIdioma] = useState("");
-  const [qualidade, setQualidade] = useState("");
+  const [category, setCategory] = useState("Pokémon");
+  const [idioma, setIdioma] = useState("Português");
+  const [qualidade, setQualidade] = useState("Excelente");
+  const [extras, setExtras] = useState("");
   const [image, setImage] = useState<File | null>(null);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitting(true);
-    setError("");
-    setSuccess("");
 
     try {
+      setSubmitting(true);
+      setError("");
+      setSuccess("");
+
       const formData = new FormData();
-      formData.append("title", title);
+      formData.append("title", title.trim());
       formData.append("price", price);
       formData.append("category", category);
-      formData.append("idioma", `${idioma}\n\nIdioma do item: ${idioma}`);
-      formData.append("qualidade", `${qualidade}\n\nQualidade do item: ${qualidade}`);
+      formData.append("idioma", idioma);
+      formData.append("qualidade", qualidade);
+      formData.append("extras", extras.trim());
 
       if (image) {
         formData.append("image", image);
@@ -43,9 +47,10 @@ export default function Upload() {
       setSuccess("Anúncio publicado com sucesso!");
       setTitle("");
       setPrice("");
-      setCategory("");
-      setIdioma("");
-      setQualidade("");
+      setCategory("Pokémon");
+      setIdioma("Português");
+      setQualidade("Excelente");
+      setExtras("");
       setImage(null);
 
       setTimeout(() => {
@@ -62,19 +67,22 @@ export default function Upload() {
     <section className="upload-page">
       <div className="upload-card">
         <h1>Criar anúncio</h1>
-        <p>Preencha os dados do produto e publique seu anúncio no marketplace.</p>
-        <p>*Ao digitar o nome da carta, também coloque o número para facilitar a busca.</p> 
+        <p>Preencha os dados da carta e publique seu anúncio no marketplace.</p>
 
-        {success && <div className="upload-success">{success}</div>}
-        {error && <div className="upload-error">{error}</div>}
+        {success ? <div className="upload-success">{success}</div> : null}
+        {error ? <div className="upload-error">{error}</div> : null}
 
-        <form onSubmit={handleSubmit} className="upload-form">
+        <form className="upload-form" onSubmit={handleSubmit}>
           <label>
             Título
-            <input placeholder="Ex: Toxtricity-V (70/192)" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex.: Charizard Base Set"
+              required
+            />
           </label>
-
 
           <label>
             Preço
@@ -84,6 +92,7 @@ export default function Upload() {
               step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              placeholder="0,00"
               required
             />
           </label>
@@ -112,10 +121,22 @@ export default function Upload() {
 
           <label>
             Qualidade
+            <select value={qualidade} onChange={(e) => setQualidade(e.target.value)}>
+              {qualidades.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Extras
             <textarea
-              value={qualidade}
-              onChange={(e) => setQualidade(e.target.value)}
-              required
+              value={extras}
+              onChange={(e) => setExtras(e.target.value)}
+              placeholder="Ex.: holográfica, edição especial, com sleeve, pequeno desgaste na borda..."
+              rows={5}
             />
           </label>
 

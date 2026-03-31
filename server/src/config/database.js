@@ -9,12 +9,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dataDir = path.join(__dirname, "..", "..", "data");
+
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
 const dbPath = path.join(dataDir, "mercadotcg.sqlite");
-
 export const db = new sqlite3.Database(dbPath);
 
 export function run(sql, params = []) {
@@ -25,7 +25,7 @@ export function run(sql, params = []) {
       } else {
         resolve({
           lastID: this.lastID,
-          changes: this.changes
+          changes: this.changes,
         });
       }
     });
@@ -50,6 +50,26 @@ export function all(sql, params = []) {
   });
 }
 
+async function ensureProductsColumns() {
+  const columns = await all(`PRAGMA table_info(products)`);
+
+  const hasIdioma = columns.some((col) => col.name === "idioma");
+  const hasQualidade = columns.some((col) => col.name === "qualidade");
+  const hasExtras = columns.some((col) => col.name === "extras");
+
+  if (!hasIdioma) {
+    await run(`ALTER TABLE products ADD COLUMN idioma TEXT NOT NULL DEFAULT 'Português'`);
+  }
+
+  if (!hasQualidade) {
+    await run(`ALTER TABLE products ADD COLUMN qualidade TEXT NOT NULL DEFAULT 'Excelente'`);
+  }
+
+  if (!hasExtras) {
+    await run(`ALTER TABLE products ADD COLUMN extras TEXT NOT NULL DEFAULT ''`);
+  }
+}
+
 export async function initializeDatabase() {
   await run(`
     CREATE TABLE IF NOT EXISTS users (
@@ -69,13 +89,15 @@ export async function initializeDatabase() {
       category TEXT NOT NULL,
       idioma TEXT NOT NULL,
       qualidade TEXT NOT NULL,
-      extras TEXT NOT NULL,
+      extras TEXT NOT NULL DEFAULT '',
       image_url TEXT,
       user_id INTEGER NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
+
+  await ensureProductsColumns();
 
   await run(`
     CREATE TABLE IF NOT EXISTS orders (
@@ -108,48 +130,60 @@ export async function initializeDatabase() {
 
 async function seedProducts() {
   await run(
-    `
-      INSERT INTO users (name, email, password)
-      VALUES (?, ?, ?)
-    `,
+    `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
     ["Loja Demo", "demo@mercadotcg.com", "123456"]
   ).catch(() => null);
 
-  const demoUser = await get(`SELECT id FROM users WHERE email = ?`, [
-    "demo@mercadotcg.com"
-  ]);
+  const demoUser = await get(
+    `SELECT id FROM users WHERE email = ?`,
+    ["demo@mercadotcg.com"]
+  );
 
   if (!demoUser) return;
 
   const products = [
     {
       title: "Charizard Holográfico",
-      description: "Carta rara em ótimo estado para colecionadores.",
       price: 299.9,
       category: "Pokémon",
-      image_url: "/uploads/sample-charizard.jpg"
+      idioma: "Português",
+      qualidade: "Excelente",
+      extras: "Carta rara holográfica. Ótima para colecionadores.",
+      image_url: "/uploads/sample-charizard.jpg",
     },
     {
       title: "Pikachu Edição Especial",
-      description: "Carta promocional muito procurada.",
       price: 149.9,
       category: "Pokémon",
-      image_url: "/uploads/sample-pikachu.jpg"
+      idioma: "Inglês",
+      qualidade: "Muito boa",
+      extras: "Edição promocional muito procurada.",
+      image_url: "/uploads/sample-pikachu.jpg",
     },
     {
       title: "Deck Box Premium",
-      description: "Acessório ideal para proteger sua coleção.",
       price: 59.9,
       category: "Acessórios",
-      image_url: "/uploads/sample-deckbox.jpg"
-    }
+      idioma: "Português",
+      qualidade: "Nova",
+      extras: "Ideal para proteger e transportar sua coleção.",
+      image_url: "/uploads/sample-deckbox.jpg",
+    },
   ];
 
   for (const product of products) {
     await run(
       `
-        INSERT INTO products (title, price, category, idioma, qualidade, extras, image_url, user_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO products (
+          title,
+          price,
+          category,
+          idioma,
+          qualidade,
+          extras,
+          image_url,
+          user_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         product.title,
@@ -159,7 +193,7 @@ async function seedProducts() {
         product.qualidade,
         product.extras,
         product.image_url,
-        demoUser.id
+        demoUser.id,
       ]
     );
   }

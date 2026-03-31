@@ -14,6 +14,7 @@ export type Product = {
   category: string;
   idioma: string;
   qualidade: string;
+  extras: string;
   image_url: string | null;
   user_id: number;
   seller_name?: string;
@@ -60,7 +61,6 @@ function getAuthHeaders(isFormData = false): HeadersInit {
 async function handleResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get("content-type") || "";
   const isJson = contentType.includes("application/json");
-
   const data = isJson ? await response.json() : null;
 
   if (!response.ok) {
@@ -68,6 +68,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
       data && typeof data === "object" && "message" in data
         ? String(data.message)
         : "Erro na requisição.";
+
     throw new Error(message);
   }
 
@@ -202,13 +203,7 @@ export async function getOrders(): Promise<Order[]> {
     headers: getAuthHeaders(),
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Erro ao buscar pedidos");
-  }
-
-  return data;
+  return handleResponse<Order[]>(response);
 }
 
 export async function createOrder(data: { items: OrderItemInput[] }) {

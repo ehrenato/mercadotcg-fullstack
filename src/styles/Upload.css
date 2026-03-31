@@ -1,152 +1,120 @@
-/* Styles merged into global.css */
 .upload-page {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 32px 16px 48px;
+  display: grid;
+  place-items: center;
 }
 
 .upload-card {
-  background: #ffffff;
+  width: min(860px, 100%);
+  background: #fff;
   border: 1px solid #e5e7eb;
-  border-radius: 24px;
+  border-radius: 28px;
+  box-shadow: 0 22px 56px rgba(15, 23, 42, 0.08);
   padding: 28px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
-}
-
-.upload-header {
-  margin-bottom: 24px;
-}
-
-.upload-header h1 {
-  margin: 0 0 8px;
-  font-size: 2rem;
-  color: #111827;
+  display: grid;
+  gap: 18px;
 }
 
 .upload-card h1 {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 2rem;
   color: #111827;
-}
-
-.upload-header p {
-  margin: 0;
-  color: #6b7280;
 }
 
 .upload-card p {
   margin: 0;
-  color: #1c2a48;
+  color: #6b7280;
 }
 
-.upload-alert {
-  margin-bottom: 18px;
+.upload-success,
+.upload-error {
   padding: 14px 16px;
-  border-radius: 12px;
-  font-weight: 600;
+  border-radius: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
 }
 
-.upload-alert.success {
+.upload-success {
   background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  border-color: #a7f3d0;
   color: #065f46;
 }
 
-.upload-alert.error {
+.upload-error {
   background: #fef2f2;
-  border: 1px solid #fecaca;
+  border-color: #fecaca;
   color: #991b1b;
 }
 
 .upload-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.upload-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
 .upload-form label {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
-  color: #374151;
-  font-weight: 600;
+  color: #334155;
+  font-weight: 700;
 }
 
-.upload-form input,
-.upload-form textarea,
-.upload-form select {
-  width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 14px;
-  padding: 13px 14px;
-  font-size: 1rem;
-  outline: none;
-  box-sizing: border-box;
-  transition: 0.2s ease;
+.upload-form label:has(textarea),
+.upload-form label:has(input[type="file"]) {
+  grid-column: 1 / -1;
 }
 
 .upload-form textarea {
-  resize: vertical;
+  min-height: 150px;
 }
 
-.upload-form input:focus,
-.upload-form textarea:focus,
-.upload-form select:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+.upload-form input[type="file"] {
+  padding: 12px;
+  background: #fff;
 }
 
 .upload-actions {
+  grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 .upload-primary,
 .upload-secondary {
   border: none;
   border-radius: 14px;
-  padding: 14px 18px;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: 0.2s ease;
+  padding: 13px 18px;
+  font-weight: 800;
 }
 
 .upload-primary {
   background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: #ffffff;
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.16);
 }
 
 .upload-secondary {
-  background: #eef2f7;
-  color: #111827;
-}
-
-.upload-primary:hover,
-.upload-secondary:hover {
-  transform: translateY(-1px);
-}
-
-.upload-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
 }
 
 @media (max-width: 768px) {
-  .upload-grid {
+  .upload-card {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .upload-form {
     grid-template-columns: 1fr;
   }
 
   .upload-actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
+  }
+
+  .upload-actions button {
+    width: 100%;
   }
 }

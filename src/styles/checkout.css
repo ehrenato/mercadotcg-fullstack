@@ -1,1 +1,122 @@
-/* Styles merged into global.css */
+.cart-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.cart-page h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #111827;
+}
+
+.cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1.6fr auto auto auto;
+  gap: 16px;
+  align-items: center;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
+}
+
+.cart-item h3 {
+  margin: 0 0 6px;
+  color: #111827;
+}
+
+.cart-item p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.cart-item__quantity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-item__quantity button,
+.cart-item > button,
+.cart-page > button,
+.cart-summary button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cart-item__quantity button {
+  background: #eef2ff;
+  color: #4338ca;
+  min-width: 40px;
+}
+
+.cart-item > button {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.cart-summary {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
+  position: sticky;
+  top: 96px;
+}
+
+.cart-summary h3 {
+  margin: 0;
+  color: #111827;
+}
+
+.cart-summary p {
+  margin: 0;
+  color: #374151;
+}
+
+.cart-summary button:first-of-type {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+}
+
+.cart-summary button:last-of-type {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.cart-page > button {
+  width: fit-content;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .cart-page {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+}

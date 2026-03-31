@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { createOrder } from "../services/api";
+import "../styles/checkout.css";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -9,21 +10,14 @@ export default function Checkout() {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  if (cartItems.length === 0) {
-    return (
-      <section>
-        <h1>Carrinho vazio</h1>
-        <p>Escolha alguns produtos antes de finalizar.</p>
-      </section>
-    );
-  }
+  const [success, setSuccess] = useState("");
 
   async function handleCheckout() {
-    setSubmitting(true);
-    setError("");
-
     try {
+      setSubmitting(true);
+      setError("");
+      setSuccess("");
+
       await createOrder({
         items: cartItems.map((item) => ({
           productId: item.id,
@@ -31,8 +25,12 @@ export default function Checkout() {
         })),
       });
 
+      setSuccess("Pedido realizado com sucesso!");
       clearCart();
-      navigate("/pedidos");
+
+      setTimeout(() => {
+        navigate("/pedidos");
+      }, 1000);
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -44,26 +42,80 @@ export default function Checkout() {
     }
   }
 
-  return (
-    <section>
-      <h1>Checkout</h1>
+  if (cartItems.length === 0) {
+    return (
+      <section className="checkout-page">
+        <div className="checkout-empty">
+          <h1>Carrinho vazio</h1>
+          <p>Escolha alguns produtos antes de finalizar a compra.</p>
+          <Link to="/" className="checkout-back-link">
+            Voltar para a home
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
-      <div>
-        {cartItems.map((item) => (
-          <div key={item.id}>
-            {item.title} — R$ {Number(item.price).toFixed(2)} x {item.quantity}
-          </div>
-        ))}
+  return (
+    <section className="checkout-page">
+      <div className="checkout-header">
+        <h1>Checkout</h1>
+        <p>Revise seus itens antes de confirmar o pedido.</p>
       </div>
 
-      <h2>Total</h2>
-      <p>R$ {totalPrice.toFixed(2)}</p>
+      {error ? <div className="checkout-alert error">{error}</div> : null}
+      {success ? <div className="checkout-alert success">{success}</div> : null}
 
-      <button type="button" onClick={handleCheckout} disabled={submitting}>
-        {submitting ? "Processando..." : "Confirmar pagamento"}
-      </button>
+      <div className="checkout-layout">
+        <div className="checkout-items">
+          {cartItems.map((item) => (
+            <article key={item.id} className="checkout-item">
+              <div className="checkout-item__info">
+                <h3>{item.title}</h3>
+                <p>
+                  <strong>Categoria:</strong> {item.category}
+                </p>
+                <p>
+                  <strong>Idioma:</strong> {item.idioma}
+                </p>
+                <p>
+                  <strong>Qualidade:</strong> {item.qualidade}
+                </p>
+              </div>
 
-      {error ? <p>{error}</p> : null}
+              <div className="checkout-item__summary">
+                <span>Qtd: {item.quantity}</span>
+                <strong>
+                  R$ {(Number(item.price) * item.quantity).toFixed(2)}
+                </strong>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <aside className="checkout-summary">
+          <h2>Resumo</h2>
+
+          <div className="checkout-summary__row">
+            <span>Itens</span>
+            <span>{cartItems.length}</span>
+          </div>
+
+          <div className="checkout-summary__row">
+            <span>Total</span>
+            <strong>R$ {totalPrice.toFixed(2)}</strong>
+          </div>
+
+          <button
+            type="button"
+            className="checkout-confirm-button"
+            onClick={handleCheckout}
+            disabled={submitting}
+          >
+            {submitting ? "Processando..." : "Confirmar pagamento"}
+          </button>
+        </aside>
+      </div>
     </section>
   );
 }

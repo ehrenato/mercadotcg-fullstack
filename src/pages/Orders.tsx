@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getOrders, type Order } from "../services/api";
-import "../styles/Orders.css";
 
 export default function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -12,21 +11,14 @@ export default function Orders() {
 
     async function loadOrders() {
       try {
-        setLoading(true);
-        setError("");
-
         const data = await getOrders();
 
         if (active) {
           setOrders(data);
         }
-      } catch (err) {
+      } catch {
         if (active) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Não foi possível carregar seus pedidos."
-          );
+          setError("Não foi possível carregar seus pedidos.");
         }
       } finally {
         if (active) {
@@ -43,65 +35,47 @@ export default function Orders() {
   }, []);
 
   if (loading) {
-    return (
-      <section className="orders-state">
-        <p>Carregando pedidos...</p>
-      </section>
-    );
+    return <div className="page-status">Carregando pedidos...</div>;
   }
 
   return (
     <section className="orders-page">
-      <div className="orders-page__header">
+      <header className="orders-page__header">
         <h1>Meus pedidos</h1>
-        <p>Confira aqui seus pedidos.</p>
-      </div>
+        <p>Pedidos reais vindos do backend.</p>
+      </header>
 
-      {error ? <div className="orders-alert">{error}</div> : null}
+      {error ? <div className="orders-page__error">{error}</div> : null}
 
       {orders.length === 0 ? (
-        <div className="orders-empty">
+        <div className="orders-page__empty">
           <h2>Nenhum pedido encontrado</h2>
           <p>Finalize uma compra para ver seus pedidos aqui.</p>
         </div>
       ) : (
-        <div className="orders-list">
+        <div className="orders-page__list">
           {orders.map((order) => (
             <article key={order.id} className="order-card">
-              <div className="order-card__header">
-                <div>
-                  <span className="order-card__label">Pedido</span>
-                  <h2>#{order.id}</h2>
-                </div>
+              <h2>Pedido #{order.id}</h2>
+              <p>
+                <strong>Total:</strong> R$ {Number(order.total).toFixed(2)}
+              </p>
+              <p>
+                <strong>Data:</strong>{" "}
+                {new Date(order.created_at).toLocaleString("pt-BR", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}
+              </p>
 
-                <div className="order-card__meta">
-                  <strong>R$ {Number(order.total).toFixed(2)}</strong>
-                  <span>
-                    {new Date(order.created_at).toLocaleString("pt-BR", {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                    })}
-                  </span>
-                </div>
-              </div>
-
-              <div className="order-items">
+              <ul>
                 {order.items.map((item) => (
-                  <div key={item.id} className="order-item">
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>
-                        Quantidade: {item.quantity} · Unitário: R${" "}
-                        {Number(item.unit_price).toFixed(2)}
-                      </p>
-                    </div>
-
-                    <span className="order-item__total">
-                      R$ {(Number(item.unit_price) * item.quantity).toFixed(2)}
-                    </span>
-                  </div>
+                  <li key={item.id}>
+                    {item.title} — {item.quantity}x — R${" "}
+                    {Number(item.unit_price).toFixed(2)}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </article>
           ))}
         </div>

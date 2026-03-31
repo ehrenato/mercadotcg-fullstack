@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
   const { search = "", category = "", sellerId = "" } = req.query;
 
   let sql = `
-    SELECT 
+    SELECT
       p.id,
       p.title,
       p.price,
@@ -63,7 +63,7 @@ router.get("/", (req, res) => {
 
     const formatted = rows.map((product) => ({
       ...product,
-      image_url: normalizeImagePath(product.image_url)
+      image_url: normalizeImagePath(product.image_url),
     }));
 
     res.json(formatted);
@@ -72,7 +72,7 @@ router.get("/", (req, res) => {
 
 router.get("/mine", requireAuth, (req, res) => {
   const sql = `
-    SELECT 
+    SELECT
       p.id,
       p.title,
       p.price,
@@ -95,7 +95,7 @@ router.get("/mine", requireAuth, (req, res) => {
 
     const formatted = rows.map((product) => ({
       ...product,
-      image_url: normalizeImagePath(product.image_url)
+      image_url: normalizeImagePath(product.image_url),
     }));
 
     res.json(formatted);
@@ -104,7 +104,7 @@ router.get("/mine", requireAuth, (req, res) => {
 
 router.get("/:id", (req, res) => {
   const sql = `
-    SELECT 
+    SELECT
       p.id,
       p.title,
       p.price,
@@ -132,32 +132,47 @@ router.get("/:id", (req, res) => {
 
     res.json({
       ...row,
-      image_url: normalizeImagePath(row.image_url)
+      image_url: normalizeImagePath(row.image_url),
     });
   });
 });
 
 router.post("/", requireAuth, upload.single("image"), (req, res) => {
-  const { title, price, idioma, qualidade } = req.body;
+  const { title, price, category, idioma, qualidade, extras } = req.body;
 
-  if (!title || !price || !category || !idioma|| !qualidade) {
+  if (!title || !price || !category || !idioma || !qualidade) {
     return res.status(400).json({
-      message: "Título, preço, categoria, idioma e qualidade são obrigatórios."
+      message: "Título, preço, categoria, idioma e qualidade são obrigatórios.",
     });
   }
 
-  const imageUrl = req.file
-    ? `/uploads/${req.file.filename}`
-    : null;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
   const sql = `
-    INSERT INTO products (title, price, category, idioma, qualidade, image_url, user_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO products (
+      title,
+      price,
+      category,
+      idioma,
+      qualidade,
+      extras,
+      image_url,
+      user_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.run(
     sql,
-    [title, Number(price), category, idioma, qualidade, imageUrl, req.user.id],
+    [
+      title,
+      Number(price),
+      category,
+      idioma,
+      qualidade,
+      extras ?? "",
+      imageUrl,
+      req.user.id,
+    ],
     function (err) {
       if (err) {
         return res.status(500).json({ message: "Erro ao criar anúncio." });
@@ -170,15 +185,16 @@ router.post("/", requireAuth, upload.single("image"), (req, res) => {
         category,
         idioma,
         qualidade,
+        extras: extras ?? "",
         image_url: normalizeImagePath(imageUrl),
-        user_id: req.user.id
+        user_id: req.user.id,
       });
     }
   );
 });
 
 router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
-  const { title, price, category, idioma, qualidade } = req.body;
+  const { title, price, category, idioma, qualidade, extras } = req.body;
   const productId = Number(req.params.id);
 
   db.get(`SELECT * FROM products WHERE id = ?`, [productId], (findErr, product) => {
@@ -199,6 +215,7 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
     const nextCategory = category ?? product.category;
     const nextIdioma = idioma ?? product.idioma;
     const nextQualidade = qualidade ?? product.qualidade;
+    const nextExtras = extras ?? product.extras ?? "";
 
     let nextImageUrl = product.image_url;
 
@@ -214,7 +231,9 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
         if (fs.existsSync(oldFilePath)) {
           try {
             fs.unlinkSync(oldFilePath);
-          } catch {}
+          } catch {
+            // ignora erro de remoção
+          }
         }
       }
 
@@ -223,13 +242,29 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
 
     const sql = `
       UPDATE products
-      SET title = ?, price = ?, category = ?, idioma = ?, qualidaed = ?, image_url = ?
+      SET
+        title = ?,
+        price = ?,
+        category = ?,
+        idioma = ?,
+        qualidade = ?,
+        extras = ?,
+        image_url = ?
       WHERE id = ?
     `;
 
     db.run(
       sql,
-      [nextTitle, Number(nextPrice), nextCategory, nextIdioma, nextQualidade, nextImageUrl, productId],
+      [
+        nextTitle,
+        Number(nextPrice),
+        nextCategory,
+        nextIdioma,
+        nextQualidade,
+        nextExtras,
+        nextImageUrl,
+        productId,
+      ],
       function (updateErr) {
         if (updateErr) {
           return res.status(500).json({ message: "Erro ao atualizar anúncio." });
@@ -242,8 +277,9 @@ router.put("/:id", requireAuth, upload.single("image"), (req, res) => {
           category: nextCategory,
           idioma: nextIdioma,
           qualidade: nextQualidade,
+          extras: nextExtras,
           image_url: normalizeImagePath(nextImageUrl),
-          user_id: req.user.id
+          user_id: req.user.id,
         });
       }
     );
@@ -282,7 +318,9 @@ router.delete("/:id", requireAuth, (req, res) => {
         if (fs.existsSync(filePath)) {
           try {
             fs.unlinkSync(filePath);
-          } catch {}
+          } catch {
+            // ignora erro de remoção
+          }
         }
       }
 

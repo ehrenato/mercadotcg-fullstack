@@ -9,9 +9,9 @@ import {
 import {
   clearAuthSession,
   getAuthSession,
-  login as apiLogin,
+  login as loginRequest,
   me,
-  register as apiRegister,
+  register as registerRequest,
   type User,
 } from "../services/api";
 
@@ -65,13 +65,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   async function handleLogin(email: string, password: string) {
-    const response = await apiLogin({ email, password });
+    const response = await loginRequest({ email, password });
     localStorage.setItem("token", response.token);
     setUser(response.user);
   }
 
   async function handleRegister(name: string, email: string, password: string) {
-    const response = await apiRegister({ name, email, password });
+    const response = await registerRequest({ name, email, password });
     localStorage.setItem("token", response.token);
     setUser(response.user);
   }
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     () => ({
       user,
       loading,
-      isAuthenticated: Boolean(user),
+      isAuthenticated: !!user,
       login: handleLogin,
       register: handleRegister,
       logout: handleLogout,

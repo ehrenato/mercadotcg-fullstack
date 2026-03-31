@@ -10,7 +10,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { loading, isAuthenticated } = useAuth();
 
   if (loading) {
-    return <div style={{ padding: 24 }}>Carregando...</div>;
+    return <div className="page-status">Carregando...</div>;
   }
 
   if (!isAuthenticated) {

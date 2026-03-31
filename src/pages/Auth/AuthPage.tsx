@@ -38,101 +38,88 @@ export default function AuthPage() {
   function toggleMode() {
     setIsLoginMode((prev) => !prev);
     setError("");
-    setName("");
-    setEmail("");
-    setPassword("");
   }
 
   return (
     <section className="auth-page">
       <div className="auth-page__hero">
-        <span className="auth-page__badge">MercadoTCG</span>
-        <h1>Compre, venda e gerencie suas cartas.</h1>
+        <span className="auth-page__brand">MercadoTCG</span>
+        <h1>Compre, venda e gerencie suas cartas com uma experiência moderna.</h1>
         <p>
           Entre na sua conta para anunciar produtos, acompanhar pedidos e
           administrar seus anúncios em um só lugar.
         </p>
 
-        <ul className="auth-page__features">
-          <li>Cadastro e login com autenticação real</li>
-          <li>Área para gerenciar seus anúncios</li>
-          <li>Upload de produtos com imagem</li>
-          <li>Fluxo preparado para pedidos e carrinho</li>
+        <ul>
+          <li>✔ Cadastro e login com autenticação real</li>
+          <li>✔ Área para gerenciar seus anúncios</li>
+          <li>✔ Upload de produtos com imagem</li>
+          <li>✔ Fluxo preparado para pedidos e carrinho</li>
         </ul>
       </div>
 
-      <div className="auth-card-modern">
-        <div className="auth-card-modern__header">
-          <h2>{isLoginMode ? "Entrar" : "Criar conta"}</h2>
-          <p>
-            {isLoginMode
-              ? "Acesse sua conta para continuar."
-              : "Cadastre-se para começar a anunciar."}
-          </p>
-        </div>
+      <div className="auth-page__form-card">
+        <h2>{isLoginMode ? "Entrar" : "Criar conta"}</h2>
+        <p>
+          {isLoginMode
+            ? "Acesse sua conta para continuar."
+            : "Cadastre-se para começar a anunciar."}
+        </p>
 
-        {error && <div className="auth-card-modern__error">{error}</div>}
+        {error ? <div className="auth-page__error">{error}</div> : null}
 
-        <form className="auth-card-modern__form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="auth-form">
           {!isLoginMode && (
-            <div className="auth-field">
-              <label htmlFor="name">Nome</label>
+            <label>
+              Nome
               <input
-                id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
                 required={!isLoginMode}
               />
-            </div>
+            </label>
           )}
 
-          <div className="auth-field">
-            <label htmlFor="email">Email</label>
+          <label>
+            Email
             <input
-              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seuemail@exemplo.com"
               required
             />
-          </div>
+          </label>
 
-          <div className="auth-field">
-            <label htmlFor="password">Senha</label>
+          <label>
+            Senha
             <input
-              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Digite sua senha"
               required
             />
-          </div>
+          </label>
 
-          <button type="submit" className="auth-submit-button" disabled={loading}>
+          <button type="submit" disabled={loading}>
             {loading
               ? isLoginMode
                 ? "Entrando..."
                 : "Criando conta..."
               : isLoginMode
-                ? "Entrar"
-                : "Criar conta"}
+              ? "Entrar"
+              : "Criar conta"}
           </button>
         </form>
 
-        <div className="auth-card-modern__footer">
+        <div className="auth-page__toggle">
           <span>
             {isLoginMode ? "Ainda não tem conta?" : "Já possui conta?"}
           </span>
-
-          <button
-            type="button"
-            className="auth-toggle-button"
-            onClick={toggleMode}
-          >
+          <button type="button" onClick={toggleMode}>
             {isLoginMode ? "Criar conta" : "Entrar"}
           </button>
         </div>
